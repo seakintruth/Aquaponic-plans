@@ -1,7 +1,7 @@
 // +-------------------------------------+
 // Title:        Parametric One Piece Bell Siphon
 // Version:      3.8
-// Release Date: 2023-02-10 (ISO 8601)
+// Release Date: 2023-02-11 (ISO 8601)
 // Author:       Jeremy D. Gerdes
 // +-------------------------------------+
 //
@@ -10,31 +10,36 @@
 
 /* [Bell Siphon] */
 // How thick to make all walls (mm)
-Wall_Thickness=1.8;
+Wall_Thickness=1.2;
 // larger diameter allows for a higher flow rate, bell and shrowd diameters are calculated from this (mm)
-Standpipe_Inner_Diameter=31;
+Standpipe_Inner_Diameter=32.1;
 // Total standpipe height (mm)
-Standpipe_Height=240;
+Standpipe_Height=220.1;
 // Total number of bell arches to allow flow into the bell, arches provide additional support durring print, but limit total flow into the bell
 Bell_Cutout_Count=15;
 // Width of bell arches to allow flow into the bell    
-Bell_Cutout_Width=4;
+Bell_Cutout_Width=3.6;
 // Height of bell arches to allow flow into the bell    
-Bell_Cutout_Height=12;
+Bell_Cutout_Height=12.1;
 
 /* [Printer Settings] */
-// minimum object wall thickness can't be less than 3x extruder_line_thickness this helps ensure a water tight seal (mm)
-Extruder_Line_Thickness=.6;
+// minimum object wall thickness shouldn't be less than 3x extruder_line_thickness this helps ensure a water tight seal (mm)
+Extruder_Line_Thickness=1.2;
 //Enter you're printer's max height. Will reduce standpipe height to match Maximum_Print_Height [not yet implemented] (mm)
 Maximum_Print_Height=260;
 
-/*[Debuging]*/
+/*[Generation Options]*/
 Generate_Standpipe=true;
 Generate_Bell=true;
+Generate_Shroud=true;
 Draft_Resolution=true;
+
+// ----------------
 // constants 
+// ----------------
 // add this constant to all other constants so they are excluded from the customizer
 C_Null=0+0;
+C_MIN_STANDPIPE_HEIGHT=65+C_Null;
 face_resolution=40+C_Null;
 
 // set minimum faces
@@ -59,6 +64,7 @@ if (Generate_Standpipe) {
     // trim standpipe to funnel
     // ...........
     Cone_Height=Standpipe_Inner_Diameter; //+actual_thickness;
+    
     difference()
     {
      //create stand pipe
@@ -69,46 +75,71 @@ if (Generate_Standpipe) {
             };
         translate([0,0,Standpipe_Height]) 
         {
-            code_solid (Cone_Height,actual_thickness,true);   
+            cone_solid (Cone_Height,actual_thickness,true);   
         };
-    }
+    };
 
     // stand pipe funnel
     translate([0,0,Standpipe_Height-actual_thickness]) 
     {
         difference(){
+            //union() {
             cone_hollow (Cone_Height,actual_thickness,true);   
-            cylinder(h=Standpipe_Height,r=Standpipe_Inner_Diameter/2+actual_thickness, center=true);
+                
+                
+            //};
+            cylinder(h=Standpipe_Height*10,r=Standpipe_Inner_Diameter/2+actual_thickness, center=true);
             }
     };    
 }
+
+
 /*
 ---------------------
 Generate Bell
 ---------------------
 */
+if(Generate_Bell){
+    //calculations
+    bell_inner_diameter=2*Standpipe_Inner_Diameter+2*actual_thickness;
+    bell_cone_height=0.8*bell_inner_diameter;
 
-
-//create bell
-*translate([0,0,Standpipe_Height/2]) cylinder(h=Standpipe_Height,r=Standpipe_Inner_Diameter/2,center=true);
-
-//Create bell top
-*translate([0,0,Standpipe_Height]) 
-{
-    cone_hollow (Cone_Height,actual_thickness);
-    cone_hollow (Cone_Height,actual_thickness,true);
-    *difference(
-        cone_hollow (Cone_Height,actual_thickness,true),
-        cylinder(h=Standpipe_Heigh,r=Standpipe_Inner_Diameter,center=true)
-    );
+    //create bell
+    #translate([0,0,Standpipe_Height/2]){
+      difference(){
+        cylinder(h=Standpipe_Height,r=bell_inner_diameter/2,center=true);
+        // remove inner diameter of bell
+        cylinder(h=Standpipe_Height,r=bell_inner_diameter/2-actual_thickness,center=true);
+      }
+    }
+    //Create bell top
+    #translate([0,0,Standpipe_Height]) 
+    {
+        cone_hollow (bell_cone_height,actual_thickness);
+        cone_hollow (bell_cone_height,actual_thickness,true);
+        difference(
+            cone_hollow (bell_cone_height,actual_thickness,true),
+            cylinder(h=Standpipe_Heigh,r=Standpipe_Inner_Diameter,center=true)
+        );
+    }
     
+    //remove solid cones the size of hollow cone from bell pipe
+
+    
+    
+    // bell cutout arches
+    *generate_cutouts(Bell_Cutout_Width,Bell_Cutout_Height,Bell_Cutout_Count);
+
 }
 
-
-
-// bell cutout arches
-*generate_cutouts(Bell_Cutout_Width,Bell_Cutout_Height,Bell_Cutout_Count);
-
+/*
+---------------------
+Generate shroud
+---------------------
+*/
+if(Generate_Shroud){
+    
+}
 // +------------------------------------+
 // Function: Clip
 //
@@ -133,7 +164,7 @@ Generate Bell
 
 function clip ( x, x_min, x_max ) = ( x < x_min ) ? x_min : ( x > x_max ) ? x_max : x;
 
-module code_solid ( height, thickness, f_invert = false)
+module cone_solid ( height, thickness, f_invert = false)
 {
     // make 45 degree hollow cone with thickness
     // set base to create 45 degree cone
@@ -191,5 +222,3 @@ rotate(a=-1,v=[0,0,1])
             polygon(points = [ [co_height,0],[co_height,co_width],[    co_height+(co_width/2),co_width/2]]);
   }
 }
-
-
