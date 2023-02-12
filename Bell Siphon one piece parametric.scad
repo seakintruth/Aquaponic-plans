@@ -1,7 +1,7 @@
 // +-------------------------------------+
 // Title:        Parametric One Piece Bell Siphon
 // Version:      3.8
-// Release Date: 2023-02-11 (ISO 8601)
+// Release Date: 2023-02-10 (ISO 8601)
 // Author:       Jeremy D. Gerdes
 // +-------------------------------------+
 //
@@ -70,8 +70,8 @@ if (Generate_Standpipe) {
      //create stand pipe
     translate([0,0,Standpipe_Height/2])
         difference() {
-            cylinder(h=Standpipe_Height,r=Standpipe_Inner_Diameter/2+actual_thickness, center=true);
-            cylinder(h=Standpipe_Height,r=Standpipe_Inner_Diameter/2,center=true);
+            cylinder(h=Standpipe_Height,r=(Standpipe_Inner_Diameter+actual_thickness)/2, center=true);
+            cylinder( h=Standpipe_Height,r=Standpipe_Inner_Diameter/2,center=true);
             };
         translate([0,0,Standpipe_Height]) 
         {
@@ -88,14 +88,14 @@ if (Generate_Standpipe) {
                 
                 
             //};
-            cylinder(h=Standpipe_Height*10,r=Standpipe_Inner_Diameter/2+actual_thickness, center=true);
+            cylinder(h=Standpipe_Height*10,r=(Standpipe_Inner_Diameter+actual_thickness)/2, center=true);
             }
     };    
 }
 
 
 /*
----------------------
+--------------------- 
 Generate Bell
 ---------------------
 */
@@ -104,32 +104,47 @@ if(Generate_Bell){
     bell_inner_diameter=2*Standpipe_Inner_Diameter+2*actual_thickness;
     bell_cone_height=0.8*bell_inner_diameter;
 
-    //create bell
-    #translate([0,0,Standpipe_Height/2]){
-      difference(){
-        cylinder(h=Standpipe_Height,r=bell_inner_diameter/2,center=true);
-        // remove inner diameter of bell
-        cylinder(h=Standpipe_Height,r=bell_inner_diameter/2-actual_thickness,center=true);
-      }
+    //create bell pipe
+    #difference(){
+        union(){
+            translate([0,0,Standpipe_Height/2]){
+                cylinder(h=Standpipe_Height,r=bell_inner_diameter/2,center=true);
+            };
+            //Create bell top
+            translate([0,0,Standpipe_Height]) 
+            {
+                cone_hollow (bell_cone_height,actual_thickness,true);               
+            };
+        };
+        { 
+            union(){
+                {   
+                    // bell cutout arches
+                    generate_cutouts(Bell_Cutout_Width,Bell_Cutout_Height,Bell_Cutout_Count);
+                };
+                {           
+                translate([0,0,Standpipe_Height+actual_thickness]) {
+                   cone_solid(bell_cone_height,actual_thickness,true);    } 
+                };
+                {
+                    translate([0,0,Standpipe_Height/2]){
+                        // remove inner diameter of bell
+                        //scale(1,1,1.01){
+                        cylinder(h=Standpipe_Height,r=(bell_inner_diameter-actual_thickness)/2,center=true                  );
+                    };
+                };
+                {  
+                    translate([0,0,Standpipe_Height/2]){
+                    // remove inner diameter of bell
+                    cylinder(h=Standpipe_Height,r=(bell_inner_diameter-actual_thickness)/2,center=true);
+                    };
+                };
+            };
+        };
     }
-    //Create bell top
+    // Add the bell cap
     #translate([0,0,Standpipe_Height]) 
-    {
-        cone_hollow (bell_cone_height,actual_thickness);
-        cone_hollow (bell_cone_height,actual_thickness,true);
-        difference(
-            cone_hollow (bell_cone_height,actual_thickness,true),
-            cylinder(h=Standpipe_Heigh,r=Standpipe_Inner_Diameter,center=true)
-        );
-    }
-    
-    //remove solid cones the size of hollow cone from bell pipe
-
-    
-    
-    // bell cutout arches
-    *generate_cutouts(Bell_Cutout_Width,Bell_Cutout_Height,Bell_Cutout_Count);
-
+        { cone_hollow (bell_cone_height,actual_thickness); }    
 }
 
 /*
