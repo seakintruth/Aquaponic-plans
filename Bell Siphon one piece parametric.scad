@@ -3,6 +3,8 @@
 // Version:      0.9
 // Release Date: 2023-02-12 (ISO 8601)
 // Author:       Jeremy D. Gerdes
+// Todo:         1) Add snorkle with bucket inside the shroud (if siphon lock needs assistance to break)
+//               2) Add Treads to the bottom of the standpipe, and corresponding hull connection.   
 // +-------------------------------------+
 //
 // Description:
@@ -15,7 +17,7 @@ Wall_Thickness=1.8;
 // larger diameter allows for a higher flow rate, bell and shrowd diameters are calculated from this (mm)
 Standpipe_Inner_Diameter=32.1;
 // Total standpipe height (mm)
-Standpipe_Height=220.1;
+Standpipe_Height=198.1;
 // Total number of bell arches to allow flow into the bell, arches provide additional support durring print, but limit total flow into the bell, Maximum_Print_Height can override this value (mm)  
 /* [Bell] */
 // Number of inflow arches at the bottom of the bell (mm)
@@ -186,17 +188,28 @@ if(Generate_Shroud){
         translate([0,0,Standpipe_Height/2]){
             hollow_pipe(Standpipe_Height,bell_inner_diameter+actual_thickness+Standpipe_Inner_Diameter/2,actual_thickness);
         };
-        // Generate cutouts for the shroud    
-        vertical_array(
-            Shroud_Inflow_Rows,
-            (Shroud_Cutout_Height_Rectangle+Shroud_Cutout_Width)*1.2,
-            180/Shroud_Cutout_Count_per_Row
-        ) generate_stacked_cutouts(
-            Shroud_Cutout_Width,Shroud_Cutout_Height_Rectangle,Shroud_Cutout_Count_per_Row
-        );
+        union(){
+            // Generate cutouts for the shroud    
+            vertical_array(
+                Shroud_Inflow_Rows,
+                (Shroud_Cutout_Height_Rectangle+Shroud_Cutout_Width)*1.2,
+                180/Shroud_Cutout_Count_per_Row
+            ) generate_stacked_cutouts(
+                Shroud_Cutout_Width,Shroud_Cutout_Height_Rectangle,Shroud_Cutout_Count_per_Row
+            );
+            //Cut away the top cone
+            translate([0,0,Standpipe_Height]) 
+            {
+                cone_solid(bell_cone_height,actual_thickness,true);               
+            };
+        }
     }
 }
-
+// Add shroud Plate to join standpipe
+if (Generate_Standpipe && Generate_Shroud) {
+    translate([0,0,actual_thickness/4])  
+        hollow_pipe(height = actual_thickness/2, inner_diameter = Standpipe_Inner_Diameter, thickness = (bell_inner_diameter+actual_thickness+Standpipe_Inner_Diameter/2)-Standpipe_Inner_Diameter);
+};
 if((Generate_Standpipe && Generate_Bell) || (Generate_Standpipe && Generate_Shroud)){
     difference() {
         if (Generate_Shroud) {
