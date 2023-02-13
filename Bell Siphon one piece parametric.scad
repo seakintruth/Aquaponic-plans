@@ -41,14 +41,17 @@ Extruder_Line_Thickness=1.6;
 Maximum_Print_Height=260;
 
 /*[Support Structure]*/
-// Supports help fix the standpipe in place
-Support_Width = 3;
-//
+// Recommend 3.2 Supports help fix the standpipe in place, if this is too wide then flow will be restricted too much to create a siphon (mm)
+Support_Width = 3.2;
+// Recommend between 2 and 6
 Support_Beam_Count = 3;
+//Recommend between 2 and 4
+Support_Row_Count = 4;
+let(Support_Row_Count = Support_Row_Count+1);
+
 /*
 Optionally Generate inverted supports to hold the standpipe in place
 */
-
 
 /*[Generation Options]*/
 Generate_Standpipe=true;
@@ -68,7 +71,6 @@ C_MIN_STANDPIPE_HEIGHT=65+C_Null;
 C_MIN_FN=4+C_Null;
 C_MAX_FN=200+C_Null;
 C_Min_Shroud_Inflow_Rows=1+C_Null;
-C_Support_Length = 4*Standpipe_Inner_Diameter+C_Null;
 
 /* this doesn't work as "The value for a regular variable is assigned at compile time and is thus static for all calls."
 // set minimum faces
@@ -81,6 +83,7 @@ https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Other_Language_Features#$fa,_
 //calculations
 // force thickness to be at least 3 line thicknesses
 actual_thickness = clip(Wall_Thickness,Extruder_Line_Thickness*3,Wall_Thickness+1);
+C_Support_Length = 4*Standpipe_Inner_Diameter-actual_thickness/2+C_Null;
 // Set max inflow rows to be less than expected height of object.
 Max_Shroud_Inflow_Rows=Standpipe_Height/(((Shroud_Cutout_Height_Rectangle+Shroud_Cutout_Width)*1.2))-2+C_Null;
 let(Shroud_Inflow_Rows=clip(Shroud_Inflow_Rows,C_Min_Shroud_Inflow_Rows,Max_Shroud_Inflow_Rows));
@@ -199,13 +202,13 @@ if((Generate_Standpipe && Generate_Bell) || (Generate_Standpipe && Generate_Shro
         if (Generate_Shroud) {
             // support out to the shroud remove remaining
             difference(){
-                generate_support(Support_Beam_Count,C_Support_Length,Support_Width);
+                generate_support(Support_Beam_Count,C_Support_Length,Support_Width,Support_Row_Count);
                 hollow_pipe(height = Standpipe_Height*10, inner_diameter = (bell_inner_diameter+2*actual_thickness+Standpipe_Inner_Diameter/2), thickness = 4*Standpipe_Inner_Diameter);
             }
         } else {  
         // support out to the bell remove remaining
             difference(){
-                generate_support(Support_Beam_Count,C_Support_Length,Support_Width);
+                generate_support(Support_Beam_Count,C_Support_Length,Support_Width,Support_Row_Count);
                 hollow_pipe(height = Standpipe_Height*10, inner_diameter = (bell_inner_diameter+2*actual_thickness), thickness = 4*Standpipe_Inner_Diameter);
             }
         };
@@ -220,8 +223,8 @@ if((Generate_Standpipe && Generate_Bell) || (Generate_Standpipe && Generate_Shro
     };
 }
 
-module generate_support(count,length,width){
-    vertical_array(occurance = 9, distance = C_Support_Length/2, rotation_degrees = 180/3){
+module generate_support(count,length,width,row_count){
+    vertical_array(occurance = row_count, distance = C_Support_Length/2, rotation_degrees = 180/3){
         rotate([180,0,0]){
             polar_array(radius = 0, count = count, axis = [0,0,1]){
                 rotate([0,45,0]) {
