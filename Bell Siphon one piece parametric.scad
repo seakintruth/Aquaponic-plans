@@ -1,7 +1,7 @@
 // +-------------------------------------+
 // Title:        Parametric One Piece Bell Siphon
-// Version:      0.9
-// Release Date: 2023-02-12 (ISO 8601)
+// Version:      0.92
+// Release Date: 2023-02-13 (ISO 8601)
 // Author:       Jeremy D. Gerdes
 // Todo:         1) Add snorkle with bucket inside the shroud (if siphon lock needs assistance to break)
 //               2) Add Treads to the bottom of the standpipe, and corresponding hull connection.   
@@ -45,9 +45,9 @@ Maximum_Print_Height=260;
 /*[Support Structure]*/
 // Recommend 3.2 Supports help fix the standpipe in place, if this is too wide then flow will be restricted too much to create a siphon (mm)
 Support_Width = 3.2;
-// Recommend between 2 and 6
+// Beam Count Recommend between 2 and 6
 Support_Beam_Count = 3;
-//Recommend between 2 and 4
+//Row Count Recommend between 2 and 4
 Support_Row_Count = 4;
 let(Support_Row_Count = Support_Row_Count+1);
 
@@ -63,7 +63,7 @@ Generate_Shroud=true;
 
 Generate_Support=true;
 // fn is the default Number of Faces for each object. This should be an even number 4 or more and less than 128.
-$fn=45;
+$fn=60;
 // ----------------
 // constants 
 // ----------------
@@ -210,7 +210,7 @@ if (Generate_Standpipe && Generate_Shroud) {
     translate([0,0,actual_thickness/4])  
         hollow_pipe(height = actual_thickness/2, inner_diameter = Standpipe_Inner_Diameter, thickness = (bell_inner_diameter+actual_thickness+Standpipe_Inner_Diameter/2)-Standpipe_Inner_Diameter);
 };
-if((Generate_Standpipe && Generate_Bell) || (Generate_Standpipe && Generate_Shroud)){
+if(Generate_Support && ((Generate_Standpipe && Generate_Bell) || (Generate_Standpipe && Generate_Shroud))){
     difference() {
         if (Generate_Shroud) {
             // support out to the shroud remove remaining
@@ -222,7 +222,7 @@ if((Generate_Standpipe && Generate_Bell) || (Generate_Standpipe && Generate_Shro
         // support out to the bell remove remaining
             difference(){
                 generate_support(Support_Beam_Count,C_Support_Length,Support_Width,Support_Row_Count);
-                hollow_pipe(height = Standpipe_Height*10, inner_diameter = (bell_inner_diameter+2*actual_thickness), thickness = 4*Standpipe_Inner_Diameter);
+                hollow_pipe(height = Standpipe_Height*10, inner_diameter = (bell_inner_diameter), thickness = 4*Standpipe_Inner_Diameter);
             }
         };
         {
@@ -241,7 +241,7 @@ module generate_support(count,length,width,row_count){
         rotate([180,0,0]){
             polar_array(radius = 0, count = count, axis = [0,0,1]){
                 rotate([0,45,0]) {
-                        cylinder(h = length, r = width);
+                        cylinder(h = length, r = width/2);
                 };
             }
         }
