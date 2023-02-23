@@ -1,6 +1,6 @@
 // +-------------------------------------------------+
-// Title:           Parametric One Piece Bell Siphon
-// Version:         0.93
+// Title:           Parametric Print at Once Bell Siphon
+// Version:         0.95
 // Release Date:    2023-02-16 (ISO 8601)
 // Author:          Jeremy D. Gerdes
 // Version Control: 
@@ -136,13 +136,13 @@ Generate Bell
 ---------------------
 */
 if(Generate_Bell){
+    // Male threads outside the bell
+    difference() {
+        //RodStart(diameter, height, thread_len=0, thread_diam=0, thread_pitch=0)
+        RodStart(diameter=0, height=0,thread_len=(bulkhead_connection_thread_height),thread_diam=bell_inner_diameter+(2.5*actual_thickness),thread_pitch=bulkhead_pitch);
+        cylinder(d=Standpipe_Inner_Diameter,h=3*actual_thickness+bulkhead_connection_thread_height);
+    };
     if(Generate_Bulkhead_Connection){
-        // Male threads outside the bell
-        difference() {
-            //RodStart(diameter, height, thread_len=0, thread_diam=0, thread_pitch=0)
-            RodStart(diameter=0, height=0,thread_len=(bulkhead_connection_thread_height),thread_diam=bell_inner_diameter+(2.5*actual_thickness),thread_pitch=bulkhead_pitch);
-            cylinder(d=Standpipe_Inner_Diameter,h=3*actual_thickness+bulkhead_connection_thread_height);
-        };
         // Build the connector to bulkhead, next to the object.
         // module RodEnd(diameter, height, thread_len=0, thread_diam=0, thread_pitch=0) {
         translate([0,bell_inner_diameter+Standpipe_Inner_Diameter,0]){
@@ -226,13 +226,14 @@ Shroud_Cutout_Height_Rectangle=12.1;
 Shroud_Inflow_Rows=10;
 */
 if(Generate_Shroud){
+    // Male threads outside the shroud
+    #difference() {
+        //RodStart(diameter, height, thread_len=0, thread_diam=0, thread_pitch=0)
+        RodStart(diameter=0, height=0,thread_len=(bulkhead_connection_thread_height),thread_diam=bell_inner_diameter+4.5*actual_thickness+Standpipe_Inner_Diameter/2,thread_pitch=bulkhead_pitch);
+        cylinder(d=bell_inner_diameter+Standpipe_Inner_Diameter/2,h=3*actual_thickness+bulkhead_connection_thread_height);
+    };
     if(Generate_Bulkhead_Connection){
-        // Male threads outside the shroud
-        #difference() {
-            //RodStart(diameter, height, thread_len=0, thread_diam=0, thread_pitch=0)
-            RodStart(diameter=0, height=0,thread_len=(bulkhead_connection_thread_height),thread_diam=bell_inner_diameter+4.5*actual_thickness+Standpipe_Inner_Diameter/2,thread_pitch=bulkhead_pitch);
-            cylinder(d=bell_inner_diameter+Standpipe_Inner_Diameter/2,h=3*actual_thickness+bulkhead_connection_thread_height);
-        };
+
         // [todo] Build the connector to bulkhead, next to the object.
         // module RodEnd(diameter, height, thread_len=0, thread_diam=0, thread_pitch=0) {
         translate([0,bell_inner_diameter+Standpipe_Inner_Diameter,0]){
