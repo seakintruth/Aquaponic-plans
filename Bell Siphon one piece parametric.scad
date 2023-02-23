@@ -7,8 +7,7 @@
 // License: This work is released with CC0 into the public domain.
 // https://creativecommons.org/publicdomain/zero/1.0/
 // 
-// Todo:         1) Add snorkle with bucket inside the shroud (if siphon lock needs assistance to break)
-//               2) (TESTING) Add Treads to the bottom of the standpipe, and corresponding hull connection.   
+// Todo:         1) Add snorkle with bucket inside the shroud (if siphon lock needs assistance to break) 
 // +--------------------------------------------------+
 //
 // Description:
@@ -33,13 +32,13 @@ Bell_Cutout_Width=6;
 Bell_Cutout_Height_Rectangle=12.1;
 /* [Shroud] */
 // Number of inflow arches per row of the shrowd - for more of a screen use 80
-Shroud_Cutout_Count_per_Row=25;
+Shroud_Cutout_Count_per_Row=60;
 // Width of inflow cuts on the shrowd - for more of a screen use 1.6 mm
-Shroud_Cutout_Width=2.8;
+Shroud_Cutout_Width=1.9;
 // Height of the rectangle portion for the inflow cuts on the shrowd  - for more of a screen use 8 mm
-Shroud_Cutout_Height_Rectangle=20.1;
+Shroud_Cutout_Height_Rectangle=12.1;
 // Number of rows of inflow cuts from the bottom up  - for more of a screen use 16
-Shroud_Inflow_Rows=7;
+Shroud_Inflow_Rows=11;
 
 /* [Printer Settings] */
 // minimum object wall thickness shouldn't be less than 3x extruder_line_thickness this helps ensure a water tight seal (mm)
@@ -65,8 +64,8 @@ Generate_Shroud=true;
 Generate_Bulkhead_Connection=true;
 // Supports fix the standpipe to the bell or shroud, so a standpipe and either the bell or shroud must be generated prior to generating supports.
 Generate_Support=true;
-// fn is the default Number of Faces for each object. This should be an even number 4 or more and less than 128.
-$fn=30;
+// fn is the default Number of facets. This should be an even number 4 or more and less than 128.
+$fn=46;
 // ----------------
 // constants 
 // ----------------
@@ -270,9 +269,9 @@ if(Generate_Shroud){
                 Shroud_Cutout_Width,Shroud_Cutout_Height_Rectangle,Shroud_Cutout_Count_per_Row
             );
             //Cut away the top cone again + 2 * actual_thickness to seperate the shroud from the bell.
-            translate([0,0,Standpipe_Height]) 
+            translate([0,0,Standpipe_Height-actual_thickness]) 
             {
-                cone_solid(bell_cone_height, 3 * actual_thickness,true);               
+                cone_solid(bell_cone_height, actual_thickness,true);               
             };
         }
     }
