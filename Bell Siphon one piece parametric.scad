@@ -40,12 +40,6 @@ Shroud_Cutout_Height_Rectangle=12.1;
 // Number of rows of inflow cuts from the bottom up  - for more of a screen use 16
 Shroud_Inflow_Rows=11;
 
-/* [Printer Settings] */
-// minimum object wall thickness shouldn't be less than 3x extruder_line_thickness this helps ensure a water tight seal (mm)
-Extruder_Line_Thickness=0.6;
-//Enter you're printer's max height. Will reduce object's total height to match Maximum_Print_Height [not yet implemented] (mm)
-Maximum_Print_Height=260;
-
 /*[Support Structure]*/
 // Recommend 3.2 Supports help fix the standpipe in place, if this is too wide then flow will be restricted too much to create a siphon (mm)
 Support_Width = 3.2;
@@ -57,15 +51,31 @@ let(Support_Row_Count = Support_Row_Count+1);
 /*
 Optionally Generate inverted supports to hold the standpipe in place
 */
-/*[Generation Options]*/
+/*[Bulkhead Connection Adapter]*/
+// Common Thread Pitch Value for Bulkhead Connection Adapter
+Bulkhead_Thread_Pitch=2.4;
+
+
+/*[Object Generation Options]*/
+// Standpipe with funnel at top to induce siphon
 Generate_Standpipe=true;
+// Bell provides inflow at the bottom and a travel path to the top of the standpipe
 Generate_Bell=true;
+// Media Shroud prevents grow bed media from entering bell
 Generate_Shroud=true;
+// Bulkhead connection adapter provides a method of joining unit to bottom of the grow bed
 Generate_Bulkhead_Connection=true;
-// Supports fix the standpipe to the bell or shroud, so a standpipe and either the bell or shroud must be generated prior to generating supports.
+// Supports fix the standpipe to the bell so a standpipe and the bell generated for this to apply.
 Generate_Support=true;
-// fn is the default Number of facets. This should be an even number 4 or more and less than 128.
+// fn is the default number of facets to generate. This should be an even number 4 or more and less than 128. Four makes for a square everything, 80 or higher makes near perfect circles.
 $fn=60;
+
+/* [Printer Settings] */
+// minimum object wall thickness shouldn't be less than 3x extruder_line_thickness this helps ensure a water tight seal (mm)
+Extruder_Line_Thickness=0.6;
+//Enter you're printer's max height. Will reduce object's total height to match Maximum_Print_Height [not yet implemented] (mm)
+Maximum_Print_Height=260;
+
 // ----------------
 // constants 
 // ----------------
@@ -104,7 +114,6 @@ bell_cone_height=0.8*bell_inner_diameter;
 bulkhead_bolt_radius=(bell_inner_diameter-(Standpipe_Inner_Diameter/2))/2;
 bulkhead_bolt_diameter=2*actual_thickness;
 bulkhead_connection_thread_height=4*actual_thickness;
-bulkhead_pitch=2.4;
         
 /*
 ---------------------
@@ -136,34 +145,12 @@ Generate Bell
 ---------------------
 */
 if(Generate_Bell){
-    // Male threads outside the bell
+    // Male threads outside the bell to mate to bulkhead connector
     difference() {
         //RodStart(diameter, height, thread_len=0, thread_diam=0, thread_pitch=0)
-        RodStart(diameter=0, height=0,thread_len=(bulkhead_connection_thread_height),thread_diam=bell_inner_diameter+(2.5*actual_thickness),thread_pitch=bulkhead_pitch);
+        RodStart(diameter=0, height=0,thread_len=(bulkhead_connection_thread_height),thread_diam=bell_inner_diameter+(2.5*actual_thickness),thread_pitch=Bulkhead_Thread_Pitch);
         cylinder(d=Standpipe_Inner_Diameter,h=3*actual_thickness+bulkhead_connection_thread_height);
     };
-    if(Generate_Bulkhead_Connection){
-        // Build the connector to bulkhead, next to the object.
-        // module RodEnd(diameter, height, thread_len=0, thread_diam=0, thread_pitch=0) {
-        translate([0,bell_inner_diameter+Standpipe_Inner_Diameter,0]){
-            difference() {
-                RodEnd(
-                    diameter=bell_inner_diameter+(4*actual_thickness), 
-                    height=(2*bulkhead_connection_thread_height),
-                    thread_len=(bulkhead_connection_thread_height),
-                    thread_diam=bell_inner_diameter+(2.5*actual_thickness),
-                    thread_pitch=bulkhead_pitch
-                );
-                union(){
-                    cylinder(d=Standpipe_Inner_Diameter,h=10*actual_thickness);
-                    polar_array(bulkhead_bolt_radius,5){
-                        cylinder(d=bulkhead_bolt_diameter,h=10*actual_thickness);
-                    };
-                };
-            };
-        };
-    };
-
     //create bell pipe
     #difference(){
         union(){
@@ -229,30 +216,8 @@ if(Generate_Shroud){
     // Male threads outside the shroud
     #difference() {
         //RodStart(diameter, height, thread_len=0, thread_diam=0, thread_pitch=0)
-        RodStart(diameter=0, height=0,thread_len=(bulkhead_connection_thread_height),thread_diam=bell_inner_diameter+4.5*actual_thickness+Standpipe_Inner_Diameter/2,thread_pitch=bulkhead_pitch);
+        RodStart(diameter=0, height=0,thread_len=(bulkhead_connection_thread_height),thread_diam=bell_inner_diameter+4.5*actual_thickness+Standpipe_Inner_Diameter/2,thread_pitch=Bulkhead_Thread_Pitch);
         cylinder(d=bell_inner_diameter+Standpipe_Inner_Diameter/2,h=3*actual_thickness+bulkhead_connection_thread_height);
-    };
-    if(Generate_Bulkhead_Connection){
-
-        // [todo] Build the connector to bulkhead, next to the object.
-        // module RodEnd(diameter, height, thread_len=0, thread_diam=0, thread_pitch=0) {
-        translate([0,bell_inner_diameter+Standpipe_Inner_Diameter,0]){
-            difference() {
-                RodEnd(
-                    diameter=bell_inner_diameter+6*actual_thickness+Standpipe_Inner_Diameter/2, 
-                    height=(2*bulkhead_connection_thread_height),
-                    thread_len=(bulkhead_connection_thread_height),
-                    thread_diam=bell_inner_diameter+4.5*actual_thickness+Standpipe_Inner_Diameter/2,
-                    thread_pitch=bulkhead_pitch
-                );
-                union(){
-                    cylinder(d=Standpipe_Inner_Diameter,h=10*actual_thickness);
-                    polar_array(bulkhead_bolt_radius,5){
-                        cylinder(d=bulkhead_bolt_diameter,h=10*actual_thickness);
-                    };
-                };
-            };
-        };
     };
 
     #difference() {
@@ -284,6 +249,50 @@ if (Generate_Standpipe && Generate_Shroud) {
         hollow_pipe(height = actual_thickness/2, inner_diameter = Standpipe_Inner_Diameter, thickness = (bell_inner_diameter+actual_thickness+Standpipe_Inner_Diameter/2)-Standpipe_Inner_Diameter);
 };
 */
+
+    if(Generate_Bulkhead_Connection){
+        // Build the connector to bulkhead  bell portion, next to the object.
+        // module RodEnd(diameter, height, thread_len=0, thread_diam=0, thread_pitch=0) {
+        translate([0,bell_inner_diameter+Standpipe_Inner_Diameter,0]){
+            difference() {
+                RodEnd(
+                    diameter=bell_inner_diameter+(4*actual_thickness), 
+                    height=(2*bulkhead_connection_thread_height),
+                    thread_len=(bulkhead_connection_thread_height),
+                    thread_diam=bell_inner_diameter+(2.5*actual_thickness),
+                    thread_pitch=Bulkhead_Thread_Pitch
+                );
+                union(){
+                    cylinder(d=Standpipe_Inner_Diameter,h=10*actual_thickness);
+                    polar_array(bulkhead_bolt_radius,5){
+                        cylinder(d=bulkhead_bolt_diameter,h=10*actual_thickness);
+                    };
+                };
+            };
+        };
+ 
+        // Build the connector to bulkhead shroud portion, next to the object.
+        // module RodEnd(diameter, height, thread_len=0, thread_diam=0, thread_pitch=0) {
+        translate([0,bell_inner_diameter+Standpipe_Inner_Diameter,0]){
+            difference() {
+                RodEnd(
+                    diameter=bell_inner_diameter+6*actual_thickness+Standpipe_Inner_Diameter/2, 
+                    height=(2*bulkhead_connection_thread_height),
+                    thread_len=(bulkhead_connection_thread_height),
+                    thread_diam=bell_inner_diameter+4.5*actual_thickness+Standpipe_Inner_Diameter/2,
+                    thread_pitch=Bulkhead_Thread_Pitch
+                );
+                union(){
+                    cylinder(d=Standpipe_Inner_Diameter,h=10*actual_thickness);
+                    polar_array(bulkhead_bolt_radius,5){
+                        cylinder(d=bulkhead_bolt_diameter,h=10*actual_thickness);
+                    };
+                };
+            };
+        };
+    };
+
+
 
 if(Generate_Support && ((Generate_Standpipe && Generate_Bell))){
     difference() {
