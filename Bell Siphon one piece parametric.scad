@@ -7,13 +7,11 @@
 // License: This work is released with CC0 into the public domain.
 // https://creativecommons.org/publicdomain/zero/1.0/
 // 
-// Todo:         1) Add snorkle with bucket inside the shroud (if siphon lock needs assistance to break)
-//               2) Add Treads to the bottom of the standpipe, and corresponding hull connection.   
+// Todo:         1) Add snorkle with bucket inside the shroud (if siphon lock needs assistance to break) 
 // +--------------------------------------------------+
 //
 // Description:
 //
-
 /* [Bell Siphon] */
 // How thick to make all walls (mm) except shroud wall will be 1/2 this thickness
 Wall_Thickness=1.8;
@@ -32,16 +30,15 @@ Bell_Cutout_Count=17;
 Bell_Cutout_Width=6;
 // Height of the rectangle portion for the inflow arches on the bell
 Bell_Cutout_Height_Rectangle=12.1;
-
 /* [Shroud] */
 // Number of inflow arches per row of the shrowd - for more of a screen use 80
-Shroud_Cutout_Count_per_Row=25;
+Shroud_Cutout_Count_per_Row=60;
 // Width of inflow cuts on the shrowd - for more of a screen use 1.6 mm
-Shroud_Cutout_Width=2.8;
+Shroud_Cutout_Width=1.9;
 // Height of the rectangle portion for the inflow cuts on the shrowd  - for more of a screen use 8 mm
-Shroud_Cutout_Height_Rectangle=20.1;
+Shroud_Cutout_Height_Rectangle=12.1;
 // Number of rows of inflow cuts from the bottom up  - for more of a screen use 16
-Shroud_Inflow_Rows=7;
+Shroud_Inflow_Rows=11;
 
 /* [Printer Settings] */
 // minimum object wall thickness shouldn't be less than 3x extruder_line_thickness this helps ensure a water tight seal (mm)
@@ -57,21 +54,18 @@ Support_Beam_Count = 3;
 //Row Count Recommend between 2 and 4
 Support_Row_Count = 4;
 let(Support_Row_Count = Support_Row_Count+1);
-
 /*
 Optionally Generate inverted supports to hold the standpipe in place
 */
-
 /*[Generation Options]*/
 Generate_Standpipe=true;
 Generate_Bell=true;
 Generate_Shroud=true;
 Generate_Bulkhead_Connection=true;
 // Supports fix the standpipe to the bell or shroud, so a standpipe and either the bell or shroud must be generated prior to generating supports.
-
 Generate_Support=true;
-// fn is the default Number of Faces for each object. This should be an even number 4 or more and less than 128.
-$fn=60;
+// fn is the default Number of facets. This should be an even number 4 or more and less than 128.
+$fn=46;
 // ----------------
 // constants 
 // ----------------
@@ -81,15 +75,12 @@ C_MIN_STANDPIPE_HEIGHT=65+C_Null;
 C_MIN_FN=4+C_Null;
 C_MAX_FN=200+C_Null;
 C_Min_Shroud_Inflow_Rows=1+C_Null;
-
 /* this doesn't work as "The value for a regular variable is assigned at compile time and is thus static for all calls."
 // set minimum faces
 let($fn=(2*floor((1+clip($fn,C_MIN_FN,C_MAX_FN))/2)));
-
 we would have to start using the fn= argument of everything and use our own variable for this to work.
 https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Other_Language_Features#$fa,_$fs_and_$fn
 */
-
 //calculations
 // force thickness to be at least 3 line thicknesses
 actual_thickness = clip(Wall_Thickness,Extruder_Line_Thickness*3,Wall_Thickness+1);
@@ -98,10 +89,8 @@ actual_Bell_Cutout_Height_Rectangle =
         Bell_Cutout_Height_Rectangle+2*actual_thickness : 
         Bell_Cutout_Height_Rectangle 
     ;
-
 //If would be nice if this worked, keep getting syntax errors, so need to research functions
-//function iif ( condition,if_true,if_false ) = ( condition == true ) ?  if_true  : if_false;
-
+//function iif ( condition,if_true,if_false ) = ( condition == true ) ?  if_true  : if_false
 // used to create a long support, this get's trimmed to bell or shroud if either is enabled
 C_Support_Length = 4*Standpipe_Inner_Diameter-actual_thickness/2+C_Null;
 // Set max inflow rows to be less than expected height of object.
@@ -111,6 +100,12 @@ Cone_Height=Cone_Height_Factor * Standpipe_Inner_Diameter; //+actual_thickness;
 //bell calculations
 bell_inner_diameter=2*Standpipe_Inner_Diameter+2*actual_thickness;
 bell_cone_height=0.8*bell_inner_diameter;
+//bulkhead adapter calcs
+bulkhead_bolt_radius=(bell_inner_diameter-(Standpipe_Inner_Diameter/2))/2;
+bulkhead_bolt_diameter=2*actual_thickness;
+bulkhead_connection_thread_height=3*actual_thickness;
+bulkhead_pitch=2.4;
+        
 /*
 ---------------------
 Generate Standpipe
@@ -135,47 +130,39 @@ if (Generate_Standpipe) {
     };
 };
 
-if(Generate_Bulkhead_Connection){
-    bulkhead_bolt_radius=(bell_inner_diameter-(Standpipe_Inner_Diameter/2))/2;
-    bulkhead_bolt_diameter=2*actual_thickness;
-    bulkhead_connection_thread_height=3*actual_thickness;
-
-    // Male threads outside the bell
-    difference() {
-        //RodStart(diameter, height, thread_len=0, thread_diam=0, thread_pitch=0)
-        RodStart(diameter=0, height=0,thread_len=(bulkhead_connection_thread_height),thread_diam=bell_inner_diameter+(2*actual_thickness),thread_pitch=3);
-        cylinder(d=Standpipe_Inner_Diameter,h=3*actual_thickness);
-    };
-    // Build the connector to bulkhead, next to the object.
-    // module RodEnd(diameter, height, thread_len=0, thread_diam=0, thread_pitch=0) {
-
-    translate([bell_inner_diameter+Standpipe_Inner_Diameter,0,0]){
-        difference() {
-            RodEnd(
-                diameter=bell_inner_diameter+(4*actual_thickness), 
-                height=(2*bulkhead_connection_thread_height),
-                thread_len=(bulkhead_connection_thread_height),
-                thread_diam=bell_inner_diameter+(2*actual_thickness),
-                thread_pitch=3
-            );
-            union(){
-                cylinder(d=Standpipe_Inner_Diameter,h=10*actual_thickness);
-                polar_array(bulkhead_bolt_radius,5){
-                    cylinder(d=bulkhead_bolt_diameter,h=10*actual_thickness);
-                };
-            };
-        };
-    };
-};
-
-
- 
 /*
 --------------------- 
 Generate Bell
 ---------------------
 */
 if(Generate_Bell){
+    if(Generate_Bulkhead_Connection){
+        // Male threads outside the bell
+        difference() {
+            //RodStart(diameter, height, thread_len=0, thread_diam=0, thread_pitch=0)
+            RodStart(diameter=0, height=0,thread_len=(bulkhead_connection_thread_height),thread_diam=bell_inner_diameter+(2*actual_thickness),thread_pitch=bulkhead_pitch);
+            cylinder(d=Standpipe_Inner_Diameter,h=3*actual_thickness);
+        };
+        // Build the connector to bulkhead, next to the object.
+        // module RodEnd(diameter, height, thread_len=0, thread_diam=0, thread_pitch=0) {
+        translate([bell_inner_diameter+Standpipe_Inner_Diameter,0,0]){
+            difference() {
+                RodEnd(
+                    diameter=bell_inner_diameter+(4*actual_thickness), 
+                    height=(2*bulkhead_connection_thread_height),
+                    thread_len=(bulkhead_connection_thread_height),
+                    thread_diam=bell_inner_diameter+(2*actual_thickness),
+                    thread_pitch=bulkhead_pitch
+                );
+                union(){
+                    cylinder(d=Standpipe_Inner_Diameter,h=10*actual_thickness);
+                    polar_array(bulkhead_bolt_radius,5){
+                        cylinder(d=bulkhead_bolt_diameter,h=10*actual_thickness);
+                    };
+                };
+            };
+        };
+    };
 
     //create bell pipe
     #difference(){
@@ -239,10 +226,38 @@ Shroud_Cutout_Height_Rectangle=12.1;
 Shroud_Inflow_Rows=10;
 */
 if(Generate_Shroud){
+    if(Generate_Bulkhead_Connection){
+        // Male threads outside the shroud
+        #difference() {
+            //RodStart(diameter, height, thread_len=0, thread_diam=0, thread_pitch=0)
+            RodStart(diameter=0, height=0,thread_len=(bulkhead_connection_thread_height),thread_diam=bell_inner_diameter+4*actual_thickness+Standpipe_Inner_Diameter/2,thread_pitch=bulkhead_pitch);
+            cylinder(d=bell_inner_diameter+Standpipe_Inner_Diameter/2,h=3*actual_thickness);
+        };
+        // [todo] Build the connector to bulkhead, next to the object.
+        // module RodEnd(diameter, height, thread_len=0, thread_diam=0, thread_pitch=0) {
+        translate([bell_inner_diameter+Standpipe_Inner_Diameter,0,0]){
+            difference() {
+                RodEnd(
+                    diameter=bell_inner_diameter+6*actual_thickness+Standpipe_Inner_Diameter/2, 
+                    height=(2*bulkhead_connection_thread_height),
+                    thread_len=(bulkhead_connection_thread_height),
+                    thread_diam=bell_inner_diameter+4*actual_thickness+Standpipe_Inner_Diameter/2,
+                    thread_pitch=bulkhead_pitch
+                );
+                union(){
+                    cylinder(d=Standpipe_Inner_Diameter,h=10*actual_thickness);
+                    polar_array(bulkhead_bolt_radius,5){
+                        cylinder(d=bulkhead_bolt_diameter,h=10*actual_thickness);
+                    };
+                };
+            };
+        };
+    };
+
     #difference() {
         // Generate the shroud
         translate([0,0,Standpipe_Height/2]){
-            hollow_pipe(Standpipe_Height,bell_inner_diameter+actual_thickness+Standpipe_Inner_Diameter/2,actual_thickness/2);
+            hollow_pipe(Standpipe_Height,bell_inner_diameter+actual_thickness+Standpipe_Inner_Diameter/2,actual_thickness);
         };
         union(){
             // Generate cutouts for the shroud    
@@ -253,10 +268,10 @@ if(Generate_Shroud){
             ) generate_stacked_cutouts(
                 Shroud_Cutout_Width,Shroud_Cutout_Height_Rectangle,Shroud_Cutout_Count_per_Row
             );
-            //Cut away the top cone again
-            translate([0,0,Standpipe_Height]) 
+            //Cut away the top cone again + 2 * actual_thickness to seperate the shroud from the bell.
+            translate([0,0,Standpipe_Height-actual_thickness]) 
             {
-                cone_solid(bell_cone_height,actual_thickness,true);               
+                cone_solid(bell_cone_height, actual_thickness,true);               
             };
         }
     }
@@ -269,21 +284,13 @@ if (Generate_Standpipe && Generate_Shroud) {
 };
 */
 
-if(Generate_Support && ((Generate_Standpipe && Generate_Bell) || (Generate_Standpipe && Generate_Shroud))){
+if(Generate_Support && ((Generate_Standpipe && Generate_Bell))){
     difference() {
-        if (Generate_Shroud) {
-            // support out to the shroud remove remaining
-            difference(){
-                generate_support(Support_Beam_Count,C_Support_Length,Support_Width,Support_Row_Count);
-                hollow_pipe(height = Standpipe_Height*10, inner_diameter = (bell_inner_diameter+2*actual_thickness+Standpipe_Inner_Diameter/2), thickness = 4*Standpipe_Inner_Diameter);
-            };
-        } else {  
-        // support out to the bell remove remaining
-            difference(){
-                generate_support(Support_Beam_Count,C_Support_Length,Support_Width,Support_Row_Count);
-                hollow_pipe(height = Standpipe_Height*10, inner_diameter = (bell_inner_diameter), thickness = 4*Standpipe_Inner_Diameter);
-            }
-        };
+        // support out to the bell remove remaining, don't connect supports to shroud,
+        difference(){
+            generate_support(Support_Beam_Count,C_Support_Length,Support_Width, Support_Row_Count);
+            hollow_pipe(height = Standpipe_Height*10, inner_diameter = (bell_inner_diameter), thickness = 4*Standpipe_Inner_Diameter);
+        }
         {
             union(){
                 cylinder(h = Standpipe_Height*2, r = Standpipe_Inner_Diameter/2);
