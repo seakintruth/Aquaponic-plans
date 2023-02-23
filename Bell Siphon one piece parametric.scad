@@ -32,7 +32,7 @@ Bell_Cutout_Width=6;
 Bell_Cutout_Height_Rectangle=12.1;
 /* [Shroud] */
 // Number of inflow arches per row of the shrowd - for more of a screen use 80
-Shroud_Cutout_Count_per_Row=54;
+Shroud_Cutout_Count_per_Row=60;
 // Width of inflow cuts on the shrowd - for more of a screen use 1.6 mm
 Shroud_Cutout_Width=1.9;
 // Height of the rectangle portion for the inflow cuts on the shrowd  - for more of a screen use 8 mm
@@ -65,7 +65,7 @@ Generate_Bulkhead_Connection=true;
 // Supports fix the standpipe to the bell or shroud, so a standpipe and either the bell or shroud must be generated prior to generating supports.
 Generate_Support=true;
 // fn is the default Number of facets. This should be an even number 4 or more and less than 128.
-$fn=80;
+$fn=60;
 // ----------------
 // constants 
 // ----------------
