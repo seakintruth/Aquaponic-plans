@@ -86,108 +86,96 @@ https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Other_Language_Features#$fa,_
 */
 //calculations
 // force thickness to be at least 3 line thicknesses
-actual_thickness = clip(Wall_Thickness,Extruder_Line_Thickness*3,Wall_Thickness+1);
-actual_Bell_Cutout_Height_Rectangle =Bell_Cutout_Height_Rectangle;
+calculated_thickness = clip(Wall_Thickness,Extruder_Line_Thickness*3,Wall_Thickness+1);
+calculated_Bell_Cutout_Height_Rectangle =Bell_Cutout_Height_Rectangle;
 //+bulkhead_connection_thread_height;
 
 //If would be nice if this worked, keep getting syntax errors, so need to research functions
 //function iif ( condition,if_true,if_false ) = ( condition == true ) ?  if_true  : if_false
 // used to create a long support, this get's trimmed to bell or shroud if either is enabled
-C_Support_Length = 4*Standpipe_Inner_Diameter-actual_thickness/2+C_Null;
+C_Support_Length = 4*Standpipe_Inner_Diameter-calculated_thickness/2+C_Null;
 // Set max inflow rows to be less than expected height of object.
 Max_Shroud_Inflow_Rows=Standpipe_Height/(((Shroud_Cutout_Height_Rectangle+Shroud_Cutout_Width)*1.2))-2+C_Null;
-actual_shroud_Inflow_Rows=clip(Shroud_Inflow_Rows,C_Min_Shroud_Inflow_Rows,Max_Shroud_Inflow_Rows);
-Cone_Height=Cone_Height_Factor * Standpipe_Inner_Diameter; //+actual_thickness;
+calculated_shroud_Inflow_Rows=clip(Shroud_Inflow_Rows,C_Min_Shroud_Inflow_Rows,Max_Shroud_Inflow_Rows);
+Cone_Height=Cone_Height_Factor * Standpipe_Inner_Diameter; //+calculated_thickness;
 //bell calculations
-bell_inner_diameter=2*Standpipe_Inner_Diameter+2*actual_thickness;
+bell_inner_diameter=2*Standpipe_Inner_Diameter+2*calculated_thickness;
 bell_cone_height=0.8*bell_inner_diameter;
 //bulkhead adapter calcs
 bulkhead_bolt_radius=(bell_inner_diameter-(Standpipe_Inner_Diameter/2))/2;
-bulkhead_bolt_diameter=2*actual_thickness;
-bulkhead_connection_thread_height=4*actual_thickness;
+bulkhead_bolt_diameter=2*calculated_thickness;
+bulkhead_connection_thread_height=4*calculated_thickness;
 // new pieces
-new_piece_distance=bell_inner_diameter+Standpipe_Inner_Diameter/2+7*actual_thickness;
+new_piece_distance=bell_inner_diameter+Standpipe_Inner_Diameter/2+7*calculated_thickness;
 
-/*
----------------------
-Generate Standpipe
----------------------
-*/
+
 
 if (Generate_Standpipe_and_Bell) {
-    union(){
-        //create stand pipe
-        translate([0,0,Standpipe_Height/2])
-            difference() {
-                hollow_pipe(Standpipe_Height,Standpipe_Inner_Diameter,actual_thickness);
-                translate([0,0,Standpipe_Height/2]) rotate([0,180,0]) 
-                    cylinder(r1=(Cone_Height*2)/2-(actual_thickness), r2=0, h=Cone_Height-actual_thickness);
-           };
-            //create funnel cone
-            translate([0,0,Standpipe_Height])
-            difference() {
-                cone_hollow (Cone_Height,actual_thickness,true);   
-                cylinder(h=Standpipe_Height,r=(Standpipe_Inner_Diameter)/2, center=true);
-            };
-    };
-    /*
-    --------------------- 
-    Generate Bell
-    ---------------------
-    */
-
-    //create bell pipe
-    difference(){
-        #union(){
-          translate([0,0,Standpipe_Height/2+3.5*actual_thickness]){
-              cylinder(h=Standpipe_Height,r=bell_inner_diameter/2,center=true);
-          };
-          //Create bell top
-          translate([0,0,Standpipe_Height]) 
-          {
-              cone_hollow (bell_cone_height,actual_thickness,true);               
-          };
-          // Male threads outside the bell to mate to bulkhead connector
+  /*
+  ---------------------
+  Generate Standpipe
+  ---------------------
+  */
+  union(){
+    //create stand pipe
+      translate([0,0,Standpipe_Height/2])
           difference() {
-              //RodStart(diameter, height, thread_len=0, thread_diam=0, thread_pitch=0)
-              RodStart(diameter=0, height=0,thread_len=(bulkhead_connection_thread_height),thread_diam=bell_inner_diameter+(6*actual_thickness),thread_pitch=Bulkhead_Thread_Pitch);
-              cylinder(d=Standpipe_Inner_Diameter,h=3*actual_thickness+bulkhead_connection_thread_height);
-          };
-        };
-        { 
-            union(){
-                translate([0,0,3*actual_thickness]) {   
-                    // bell cutout arches
-                    generate_cutouts(Bell_Cutout_Width,actual_Bell_Cutout_Height_Rectangle,Bell_Cutout_Count);
-                };
-                {           
-                translate([0,0,Standpipe_Height+actual_thickness]) {
-                   cone_solid(bell_cone_height,actual_thickness,true);    } 
-                };
-                {
-                    translate([0,0,Standpipe_Height/2+(3*actual_thickness)]){
-                        // remove inner diameter of bell
-                        //scale(1,1,1.01){
-                        cylinder(h=Standpipe_Height+(3*actual_thickness),r=(bell_inner_diameter-actual_thickness)/2,center=true                  );
-                    };
-                };
-                {  
-                    translate([0,0,Standpipe_Height/2]){
-                    // remove inner diameter of bell
-                    cylinder(h=Standpipe_Height,r=(bell_inner_diameter-actual_thickness)/2,center=true);
-                    };
-                };
-            };
-        };
+              hollow_pipe(Standpipe_Height,Standpipe_Inner_Diameter,calculated_thickness);
+              translate([0,0,Standpipe_Height/2]) rotate([0,180,0]) 
+                  cylinder(r1=(Cone_Height*2)/2-(calculated_thickness), r2=0, h=Cone_Height-calculated_thickness);
+          }
+          //create funnel cone
+          translate([0,0,Standpipe_Height])
+          difference() {
+              cone_hollow (Cone_Height,calculated_thickness,true);   
+              cylinder(h=Standpipe_Height,r=(Standpipe_Inner_Diameter)/2, center=true);
+          }
+  }
+  /*
+  --------------------- 
+  Generate Bell
+  ---------------------
+  */
+
+  //create bell pipe
+  #difference(){
+    union(){ //add
+      translate([0,0,Standpipe_Height/2]){cylinder(h=Standpipe_Height,r=bell_inner_diameter/2,center=true);}
+      // bell top 
+      translate([0,0,Standpipe_Height]) {
+        cone_hollow (bell_cone_height,calculated_thickness,true); 
+      }
+      // threaded bottom
+      RodStart(diameter=0, height=0,thread_len=(bulkhead_connection_thread_height),thread_diam=bell_inner_diameter+(6*calculated_thickness),thread_pitch=Bulkhead_Thread_Pitch);
     }
-    // Add the bell cap
-   #translate([0,0,Standpipe_Height]) 
-        { cone_hollow (bell_cone_height,actual_thickness); };    
-    // Add bell Plate to join standpipe
-    translate([0,0,actual_thickness/4]) {
-        hollow_pipe(height = actual_thickness/2, inner_diameter = Standpipe_Inner_Diameter, thickness = (bell_inner_diameter/2)+actual_thickness);
+    { //remove
+      union(){
+        // bell cutout arches
+        translate([0,0,bulkhead_connection_thread_height]) {   
+            generate_cutouts(Bell_Cutout_Width,calculated_Bell_Cutout_Height_Rectangle,Bell_Cutout_Count);
+        }
+        // top cone funnel cut out
+        {           
+        translate([0,0,Standpipe_Height+calculated_thickness]) {
+            cone_solid(bell_cone_height,calculated_thickness,true);    } 
+        }
+        // remove inner diameter of bell
+        {
+          translate([0,0,Standpipe_Height/2+(bulkhead_connection_thread_height)]){
+            cylinder(h=Standpipe_Height+(bulkhead_connection_thread_height),r=(bell_inner_diameter-calculated_thickness)/2,center=true);
+          }
+        }
+      }
     }
-};
+  }
+  // Add the bell cap, after cutting the funnel
+  translate([0,0,Standpipe_Height]) 
+    { cone_hollow (bell_cone_height,calculated_thickness); }    
+  // Add bell Plate to join bell to standpipe and threads
+  translate([0,0,bulkhead_connection_thread_height/2]) {
+    hollow_pipe(height = bulkhead_connection_thread_height, inner_diameter = Standpipe_Inner_Diameter, thickness = (bell_inner_diameter/2)+calculated_thickness);
+  }
+}
 /*
 ---------------------
 Generate shroud
@@ -211,25 +199,25 @@ Shroud_Inflow_Rows=10;
       difference() {
         // Generate the shroud
         translate([0,0,Standpipe_Height/2]){
-          hollow_pipe(Standpipe_Height,bell_inner_diameter+2*actual_thickness+Standpipe_Inner_Diameter/2,actual_thickness);
-        };
+          hollow_pipe(Standpipe_Height,bell_inner_diameter+2*calculated_thickness+Standpipe_Inner_Diameter/2,calculated_thickness);
+        }
         union(){
-          //Cut away the top cone again + 3 * actual_thickness to seperate the shroud from the bell.
-          translate([0,0,Standpipe_Height- 3*actual_thickness]){
-              cone_solid(bell_cone_height, 3*actual_thickness,true);  
-          };
-          // trim the bottom
-          cylinder(h=2*bulkhead_connection_thread_height,d=(2*bell_inner_diameter)+(2.5*actual_thickness),center=false);
-          // trim the top
-          translate([0,0,Standpipe_Height- 3.1*actual_thickness]){
-            cylinder(h=bulkhead_connection_thread_height,d=(2*bell_inner_diameter)+(2.5*actual_thickness),center=false);
+          //Cut away the top cone again + 3 * calculated_thickness to seperate the shroud from the bell.
+          translate([0,0,Standpipe_Height- 3*calculated_thickness]){
+              cone_solid(bell_cone_height, 3*calculated_thickness,true);  
           }
-        };
-      };
-      translate([0,0,2*bulkhead_connection_thread_height+ 4*actual_thickness]){
+          // trim the bottom
+          cylinder(h=2*bulkhead_connection_thread_height,d=(2*bell_inner_diameter)+(2.5*calculated_thickness),center=false);
+          // trim the top
+          translate([0,0,Standpipe_Height- 3.1*calculated_thickness]){
+            cylinder(h=bulkhead_connection_thread_height,d=(2*bell_inner_diameter)+(2.5*calculated_thickness),center=false);
+          }
+        }
+      }
+      translate([0,0,2*bulkhead_connection_thread_height+ 4*calculated_thickness]){
         // Generate cutouts for the shroud    
         vertical_array(
-          actual_shroud_Inflow_Rows,
+          calculated_shroud_Inflow_Rows,
           (Shroud_Cutout_Height_Rectangle+Shroud_Cutout_Width)*1.2,15
           //180/Shroud_Cutout_Count_per_Row
         ) {
@@ -238,9 +226,15 @@ Shroud_Inflow_Rows=10;
           );
         }
       }
-    };
+    }
   }
-};
+}
+
+//debugging new object:
+translate([new_piece_distance,0,0]){
+
+
+}
 
 if(Generate_Bulkhead_Connection){
     // move connector next to the object.
@@ -249,55 +243,55 @@ if(Generate_Bulkhead_Connection){
             // Build the female connector to bulkhead bell section
             difference() {
                 RodEnd(
-                    diameter=bell_inner_diameter+(8*actual_thickness), 
-                    height=(2*actual_thickness+bulkhead_connection_thread_height),
+                    diameter=bell_inner_diameter+(8*calculated_thickness), 
+                    height=(2*calculated_thickness+bulkhead_connection_thread_height),
                     thread_len=(bulkhead_connection_thread_height),
-                    thread_diam=bell_inner_diameter+(6*actual_thickness),
+                    thread_diam=bell_inner_diameter+(6*calculated_thickness),
                     thread_pitch=Bulkhead_Thread_Pitch
                 );
                 union(){
-                    cylinder(d=Standpipe_Inner_Diameter,h=10*actual_thickness);
+                    cylinder(d=Standpipe_Inner_Diameter,h=10*calculated_thickness);
                     polar_array(bulkhead_bolt_radius,5){
-                        cylinder(d=bulkhead_bolt_diameter,h=10*actual_thickness);
-                    };
-                };
-            };
+                        cylinder(d=bulkhead_bolt_diameter,h=10*calculated_thickness);
+                    }
+                }
+            }
             
-        };
-    };
-};
+        }
+    }
+}
 
 /*
 // Build the female connector to bulkhead shroud section
   difference() {
       RodEnd(
-          diameter=bell_inner_diameter+6*actual_thickness+Standpipe_Inner_Diameter/2, 
-          height=(2*actual_thickness+bulkhead_connection_thread_height),
+          diameter=bell_inner_diameter+6*calculated_thickness+Standpipe_Inner_Diameter/2, 
+          height=(2*calculated_thickness+bulkhead_connection_thread_height),
           thread_len=(bulkhead_connection_thread_height),
-          thread_diam=bell_inner_diameter+8*actual_thickness+Standpipe_Inner_Diameter/2,
+          thread_diam=bell_inner_diameter+8*calculated_thickness+Standpipe_Inner_Diameter/2,
           thread_pitch=Bulkhead_Thread_Pitch
       );
       union(){
-          cylinder(d=Standpipe_Inner_Diameter,h=10*actual_thickness);
+          cylinder(d=Standpipe_Inner_Diameter,h=10*calculated_thickness);
           polar_array(bulkhead_bolt_radius,5){
-              cylinder(d=bulkhead_bolt_diameter,h=10*actual_thickness);
-          };
-      };
-  };
+              cylinder(d=bulkhead_bolt_diameter,h=10*calculated_thickness);
+          }
+      }
+  }
 */
 
 if(Generate_Support && Generate_Standpipe_and_Bell){
     // add supports to bell cutout feet
      polar_array(0,Bell_Cutout_Count){
-      translate([0,(Standpipe_Inner_Diameter+actual_thickness)/2,actual_thickness*4]){
+      translate([0,(Standpipe_Inner_Diameter+calculated_thickness)/2,calculated_thickness*4]){
           //l=((PI*D) / n) - Cw
           supportFoot(
-            l = actual_thickness, // ((PI*bell_inner_diameter)/Bell_Cutout_Count)-Bell_Cutout_Width,
-            w = (bell_inner_diameter)/2-(Standpipe_Inner_Diameter+1.5*actual_thickness)/2,
-            h = Bell_Cutout_Height_Rectangle+Bell_Cutout_Width/2-(actual_thickness/2)
+            l = calculated_thickness, // ((PI*bell_inner_diameter)/Bell_Cutout_Count)-Bell_Cutout_Width,
+            w = (bell_inner_diameter)/2-(Standpipe_Inner_Diameter+1.5*calculated_thickness)/2,
+            h = Bell_Cutout_Height_Rectangle+Bell_Cutout_Width/2-(calculated_thickness/2)
           );
-      };
-    };
+      }
+    }
     
     //add supports
     difference() {
@@ -305,17 +299,17 @@ if(Generate_Support && Generate_Standpipe_and_Bell){
         difference(){
             generate_support(Support_Beam_Count,C_Support_Length,Support_Width, Support_Row_Count);
             hollow_pipe(height = Standpipe_Height*10, inner_diameter = (bell_inner_diameter), thickness = 40*Standpipe_Inner_Diameter);
-        };
+        }
         {
             union(){
                 cylinder(h = Standpipe_Height*2, r = Standpipe_Inner_Diameter/2);
                 translate([0,0,Standpipe_Height+Standpipe_Inner_Diameter*50]){
                     cube(Standpipe_Inner_Diameter*100,center=true);
-                };
-            };
-        };
-    };
-};
+                }
+            }
+        }
+    }
+}
 
 // +------------------------------------+
 // Functions and macros
@@ -340,7 +334,7 @@ module generate_support(count,length,width,row_count){
             polar_array(radius = 0, count = count){
                 rotate([0,45,0]) {
                         cylinder(h = length, r = width/2);
-                };
+                }
             }
         }
     }
@@ -355,7 +349,7 @@ module supportFoot(l,w,h){
     points=[[0,0,0], [l,0,0], [l,w,0], [0,w,0], [0,w,h], [l,w,h]],
     faces=[[0,1,2,3],[5,4,3,2],[0,4,5,1],[0,3,4],[5,2,1]]
   );
-};
+}
 
 module supportFootSpike(l,w,h){
   //https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Primitive_Solids#polyhedron
@@ -364,8 +358,7 @@ module supportFootSpike(l,w,h){
     points=[[l/2,0,0], [l/2,0,0], [l,w,0], [0,w,0], [l/2,w,h], [l/2,w,h]],
     faces=[[0,1,2,3],[5,4,3,2],[0,4,5,1],[0,3,4],[5,2,1]]
   );
-};
-
+}
 
 //usage:
 //vertical_array(20,20,15) generate_stacked_cutouts(cutout_width,cutout_height,cutout_count);
@@ -376,8 +369,6 @@ module vertical_array( occurance, distance, rotation_degrees ) {
                 children();
     }
 }
-
-
 
 module cone_solid ( height, thickness, f_invert = false)
 {
@@ -435,9 +426,9 @@ module generate_cutouts(co_width,co_height,co_count){
             rotate(a=-90,v=[0,1,0]) 
             linear_extrude(cutout_extrude_length) 
                 polygon(points = [ [co_height,0],[co_height, co_width],[    co_height+(co_width/2),co_width/2]]);
-         };
-    };
-};
+         }
+    }
+}
 
 module generate_stacked_cutouts(cutout_width,cutout_height,cutout_count){
   //constants
@@ -450,17 +441,17 @@ module generate_stacked_cutouts(cutout_width,cutout_height,cutout_count){
                 union(){
                 // start with a cube
                   cube([cutout_extrude_length,cutout_width,cutout_height]);
-                };
-            };
-        };
-    }; 
-};
+                }
+            }
+        }
+    } 
+}
 
 module hollow_pipe(height,inner_diameter,thickness){
     difference() {
         cylinder(h=height,r=(inner_diameter+thickness)/2, center=true);
         cylinder( h=height,r=inner_diameter/2,center=true);
-    };
+    }
 }
 
 
