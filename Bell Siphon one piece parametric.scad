@@ -1,6 +1,6 @@
 // +-------------------------------------------------+
 // Title:           Parametric Print at Once Bell Siphon
-// Version:         0.97
+// Version:         0.98
 // Release Date:    2023-02-16 (ISO 8601)
 // Author:          Jeremy D. Gerdes
 // Version Control: 
@@ -14,7 +14,7 @@
 //
 /* [Bell Siphon] */
 // How thick to make all walls (mm). Note: max of Wall Thickness and (3*'Extruder Line Thickness') over writes this vale
-Wall_Thickness=2.7;
+Wall_Thickness=3.2;
 /* [Stand Pipe] */
 // larger diameter allows for a higher flow rate, modifies bell and shrowd diameters (mm)
 Standpipe_Inner_Diameter=32.1;
@@ -159,33 +159,14 @@ if(Generate_Bulkhead_Connection){
     }
 }
 
-/*
-// Build the female connector to bulkhead shroud section
-  difference(){
-      RodEnd(
-          diameter=bell_inner_diameter+6*calculated_thickness+Standpipe_Inner_Diameter/2, 
-          height=(2*calculated_thickness+bulkhead_connection_thread_height),
-          thread_len=(bulkhead_connection_thread_height),
-          thread_diam=bell_inner_diameter+8*calculated_thickness+Standpipe_Inner_Diameter/2,
-          thread_pitch=Bulkhead_Thread_Pitch
-      );
-      union(){
-          cylinder(d=Standpipe_Inner_Diameter,h=10*calculated_thickness);
-          polar_array(bulkhead_bolt_radius,5){
-              cylinder(d=bulkhead_bolt_diameter,h=10*calculated_thickness);
-          }
-      }
-  }
-*/
-
 if(Generate_Support && Generate_Standpipe_and_Bell){
     // add supports to bell cutout feet
      polar_array(0,Bell_Cutout_Count){
-      translate([0,(Standpipe_Inner_Diameter+calculated_thickness)/2,calculated_thickness*4]){
+      translate([0,(Standpipe_Inner_Diameter+2*calculated_thickness)/2,calculated_thickness*4]){
           //l=((PI*D) / n) - Cw
           supportFoot(
             l = calculated_thickness/2, // ((PI*bell_inner_diameter)/Bell_Cutout_Count)-Bell_Cutout_Width,
-            w = (bell_inner_diameter)/2-(Standpipe_Inner_Diameter+1.5*calculated_thickness)/2,
+            w = (bell_inner_diameter)/2-(Standpipe_Inner_Diameter+(0.5*calculated_thickness))/2,
             h = Bell_Cutout_Height_Rectangle+Bell_Cutout_Width
           );
       }
@@ -483,7 +464,7 @@ module generate_stacked_cutouts(cutout_width,cutout_height,cutout_count){
 
 module hollow_pipe(height,inner_diameter,thickness){
     difference(){
-        cylinder(h=height,r=(inner_diameter+thickness)/2, center=true);
+        cylinder(h=height,r=thickness+(inner_diameter/2), center=true);
         cylinder( h=height,r=inner_diameter/2,center=true);
     }
 }
@@ -599,7 +580,7 @@ module hollow_pipe(height,inner_diameter,thickness){
 
   // This creates a vertical rod at the origin with external threads.  It uses
   // metric standards by default.
-  module ScrewThread(outer_diam, height, pitch=0, tooth_angle=30, tolerance=0.4, tip_height=0, tooth_height=0, tip_min_fract=0){
+  module ScrewThread(outer_diam, height, pitch=0, tooth_angle=30, tolerance=0.8, tip_height=0, tooth_height=0, tip_min_fract=0){
 
     pitch = (pitch==0) ? ThreadPitch(outer_diam) : pitch;
     tooth_height = (tooth_height==0) ? pitch : tooth_height;
@@ -703,7 +684,7 @@ module hollow_pipe(height,inner_diameter,thickness){
 
   // Create a standard sized metric countersunk (flat) bolt with hex key drive.
   // In compliance with convention, the length for this includes the head.
-  module MetricCountersunkBolt(diameter, length, tolerance=0.4){
+  module MetricCountersunkBolt(diameter, length, tolerance=0.8){
     drive_tolerance = pow(3*tolerance/CountersunkDriveAcrossCorners(diameter),2)
       + 0.75*tolerance;
 
@@ -745,9 +726,9 @@ module hollow_pipe(height,inner_diameter,thickness){
   }
 
 
-  // This creates a threaded hole in its children using metric standards by
-  // default.
-  module ScrewHole(outer_diam, height, position=[0,0,0], rotation=[0,0,0], pitch=0, tooth_angle=30, tolerance=0.4, tooth_height=0){
+  // This creates a threaded hole in its children using metric standards by default
+  // default tolerance=0.4 increasing for large threads
+  module ScrewHole(outer_diam, height, position=[0,0,0], rotation=[0,0,0], pitch=0, tooth_angle=30, tolerance=0.8, tooth_height=0){
     extra_height = 0.001 * height;
 
     difference(){
