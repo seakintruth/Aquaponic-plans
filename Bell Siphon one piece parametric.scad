@@ -1,6 +1,6 @@
 // +-------------------------------------------------+
 // Title:           Parametric Print at Once Bell Siphon
-// Version:         0.96
+// Version:         0.97
 // Release Date:    2023-02-16 (ISO 8601)
 // Author:          Jeremy D. Gerdes
 // Version Control: 
@@ -14,7 +14,7 @@
 //
 /* [Bell Siphon] */
 // How thick to make all walls (mm). Note: max of Wall Thickness and (3*'Extruder Line Thickness') over writes this vale
-Wall_Thickness=2.6;
+Wall_Thickness=2.7;
 /* [Stand Pipe] */
 // larger diameter allows for a higher flow rate, modifies bell and shrowd diameters (mm)
 Standpipe_Inner_Diameter=32.1;
@@ -32,13 +32,13 @@ Bell_Cutout_Width=6.1;
 Bell_Cutout_Height_Rectangle=10.1;
 /* [Shroud] */
 // Number of inflow arches per row of the shrowd - for more of a screen use 80
-Shroud_Cutout_Count_per_Row=26;
+Shroud_Cutout_Count_per_Row=24;
 // Width of inflow cuts on the shrowd - for more of a screen use 1.6 mm
-Shroud_Cutout_Width=2.5;
+Shroud_Cutout_Width=2.9;
 // Height of the rectangle portion for the inflow cuts on the shrowd  - for more of a screen use 8 mm
-Shroud_Cutout_Height_Rectangle=13.1;
+Shroud_Cutout_Height_Rectangle=10.8;
 // Number of rows of inflow cuts from the bottom up  - for more of a screen use 16
-Shroud_Inflow_Rows=10;
+Shroud_Inflow_Rows=9;
 
 /*[Support Structure]*/
 // Recommend 3.2 Supports help fix the standpipe in place, if this is too wide then flow will be restricted too much to create a siphon (mm)
@@ -67,7 +67,7 @@ Generate_Bulkhead_Connection=true;
 Generate_Support=true;
 /*[Quality]*/
 // fn is the default number of facets to generate. This should be an even number 4 or more and less than 128. Four makes for a square everything, 80 or higher makes near perfect circles.
-$fn=60;
+$fn=80;
 
 // ----------------
 // constants 
@@ -252,7 +252,7 @@ if(Generate_Support && Generate_Standpipe_and_Bell){
 // +------------------------------------+
 module create_shroud(){
   // Move the shroud top out as a seperate piece to print.
-  translate([0,new_piece_distance, 1*bulkhead_connection_thread_height]){
+  translate([0,new_piece_distance, .5*bulkhead_connection_thread_height]){
     // cuts the inflow holes
     difference(){
       //cuts the top cone, and trims total height
@@ -260,7 +260,11 @@ module create_shroud(){
         union(){
           // Generate the shroud
           translate([0,0,Standpipe_Height/2]){
-            hollow_pipe(Standpipe_Height,bell_inner_diameter+2*calculated_thickness+Standpipe_Inner_Diameter/2,calculated_thickness);
+            hollow_pipe(
+              Standpipe_Height
+              ,bell_inner_diameter+3*calculated_thickness+Standpipe_Inner_Diameter/2
+              ,calculated_thickness
+            );
           }
           // Generate the shroud top ring (ensures cut outs don't run all the way to the top of the shroud)
           translate([0,0,Standpipe_Height - 2*bulkhead_connection_thread_height]){
@@ -273,7 +277,8 @@ module create_shroud(){
         // Generate cutouts for the shroud    
         vertical_array(
           calculated_shroud_Inflow_Rows,
-          (Shroud_Cutout_Height_Rectangle+Shroud_Cutout_Width)*1.2,15
+          (Shroud_Cutout_Height_Rectangle+Shroud_Cutout_Width)*1.2,
+          15
           //180/Shroud_Cutout_Count_per_Row
         ){
           generate_stacked_cutouts(
