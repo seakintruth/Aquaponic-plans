@@ -10,6 +10,11 @@ Overall, this greenhouse design is an excellent example of how you can repurpose
 
 Setting the $fn parameter to 4 creates a gabled roof design, while setting it to a higher value, such as 80, creates a round roof design.
 
+| Round Roof  | Pitched Roof |
+| ------------- | ------------- |
+| ![Round Roof](images/Round%20Roof%20Greenhouse.png?raw=true)
+  | ![Pitched Roof](images/Pitched Roof Greenhouse.png?raw=true) |
+
 ### Round Roof
 This greenhouse design features a circular roof, which provides several benefits for growing plants. The rounded shape allows for optimal light distribution and heat retention, creating a more consistent and stable environment for plants to thrive. Additionally, the circular design eliminates corners where cold air can collect and cause drafts, ensuring a more even temperature throughout the greenhouse. 
 
