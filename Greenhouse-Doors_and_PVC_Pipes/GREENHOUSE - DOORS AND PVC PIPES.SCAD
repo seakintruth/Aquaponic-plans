@@ -19,6 +19,9 @@ rafter_angle = 25.1;
 /*[Quality]*/
 // fn is the default number of facets to generate. This should be an even number 4 or more and less than 128. Four makes for a square everything, 80 or higher makes near perfect circles.
 $fn=80;
+/* [Debugging] */
+explode_parts = false;
+
 
 // ----------------
 // constants 
@@ -31,32 +34,34 @@ building_length=building_length_ft*12;
 
 //create the thing
 #build_shed();
-build_rafters();
 
 //-------------------------
 // modules
 //-------------------------
 module build_shed(){
-    frame_base();
-    translate([0,0,door_height+5]) frame_base();
-    cinder_block_frame();
-    translate([0,building_length,0]){
-        build_end_doors();
+    explode([building_width,0,0],true,explode_parts){
+        frame_base();
+        translate([0,0,door_height+5]) frame_base();
+        cinder_block_frame();
+        #translate([0,building_length,0]){
+            build_end_doors();
+        }
+        #translate([building_width,0,0]){
+            build_side_doors();
+        };
+        build_pvc_ribbs();
+        #build_end_doors();
+        #build_side_doors();        
+        build_rafters();
     }
-    translate([building_width,0,0]){
-        build_side_doors();
-    };
-    build_pvc_ribbs();
-    build_end_doors();
-    build_side_doors();
 }
 
 module build_rafters(){
-    //Length of building
-    translate([1/2*building_width+3.5,3.5,door_height+5.5+rafter_height]) 2by6(building_length);      
-    single_rafter();
-    translate([0,building_length,0]) single_rafter();
-};
+        //Length of building
+        translate([1/2*building_width+3.5,3.5,door_height+5.5+rafter_height]) 2by6(building_length);      
+        single_rafter();
+        translate([0,building_length,0]) single_rafter();
+}
 
 module single_rafter(){
     //degree angled board one
@@ -207,8 +212,8 @@ module horizontal_array( occurance, distance, rotation_degrees ){
         translate([0,distance*i,0]) 
             rotate(a=rotation_degrees*i,v=[0,0,1])
                 children();
-    }
-}
+    };
+};
 
 module cinder_block(){
     difference(){
@@ -281,3 +286,42 @@ module framed_2x4_box(inch_length,inch_width){
         };
     };
 };
+
+// For debugging
+// from https://github.com/mathcodeprint/openscad-fiddlybits/blob/master/explode.scad
+module explode( distance, center, enable ) {
+    if ( (enable) && (!center) ) {
+
+        
+     for ( i= [0:1:$children-1])   // step needed in case $children < 2                
+        translate( [i*distance[0],i*distance[1],i*distance[2]] ) {
+            children(i);
+        } 
+    }
+    
+    //CENTERED
+    
+    if ( (enable) && (center) ) {
+        count = $children - 1;
+        explode_start = ( [ (count*distance[0])/2 * -1, (count*distance[1])/2 *-1,(count*distance[2])/2 * -1 ] ) ;
+        
+
+
+        for ( i= [0:1:$children-1])   // step needed in case $children < 2  
+        translate( explode_start ) {
+            translate( [i*distance[0],i*distance[1],i*distance[2] ] ) {
+                children(i);
+            }    
+        }
+    }
+
+    //NOT ENABLED - Include un-altered children
+
+    if (!enable) {        
+        for ( i= [0:1:$children-1]){   // step needed in case $children < 2     
+
+
+            children(i);
+        }         
+    }
+}
