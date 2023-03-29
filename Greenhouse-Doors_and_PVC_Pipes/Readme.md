@@ -48,7 +48,7 @@ By the end of this lesson, students will have a better understanding of greenhou
 # Lesson Plan
 Grade Level: 11th or 12th Grade
 
-##NGSS Standards:
+## NGSS Standards:
 
 - HS-ETS1-1: Analyze a major global challenge to specify qualitative and quantitative criteria and constraints for solutions that account for societal needs and wants.
 - HS-ETS1-2: Design a solution to a complex real-world problem by breaking it down into smaller, more manageable problems that can be solved through engineering.
@@ -56,13 +56,13 @@ Grade Level: 11th or 12th Grade
 - HS-ESS3-4: Evaluate or refine a technological solution that reduces impacts of human activities on natural systems.
 - HS-LS1-5: Ecosystem Dynamics, Functioning, and Resilience
 
-##Learning Objectives:
+## Learning Objectives:
 - Students will learn the basic principles of greenhouse design and how to customize a design to fit specific needs.
 - Students will learn how to use OpenSCAD desktop and Visual Studio Code plugins to create a 3D model of a customized greenhouse design.
 - Students will understand the importance of environmental factors such as light, temperature, and ventilation in greenhouse design and how they impact plant growth.
 - Students will understand how the design of a greenhouse can impact ecosystem dynamics, functioning, and resilience.
 
-##Materials Needed
+## Materials Needed
 This is not all inclusive
 - Computers with OpenSCAD desktop and Visual Studio Code plugins installed
 - Lumber (200 linear ft 2x4, 12 linear ft 2x6)
@@ -76,34 +76,34 @@ This is not all inclusive
 - Door Hinges (1 set)
 - 60 lb Bags of Concrete (8 ea)
 
-##Procedure:
+## Procedure:
 
-###Introduction:
+### Introduction:
 - Begin by introducing the topic of greenhouse design and the importance of environmental factors such as light, temperature, and ventilation in plant growth.
 - Discuss the benefits of greenhouse gardening and the challenges associated with designing a greenhouse that meets specific needs.
 
-###Exploration:
+### Exploration:
 - Have students research different greenhouse designs and the principles behind them.
 - Introduce the customizer design for a greenhouse made from many doors, minimal lumber, and a PVC hoop roof.
 - Discuss the advantages and disadvantages of this design and how it can be customized to fit specific needs.
 
-###Design:
+### Design:
 - Divide students into groups and have them use OpenSCAD desktop and Visual Studio Code plugins to create a 3D model of their own customized greenhouse design.
 - Encourage students to consider environmental factors such as light, temperature, and ventilation, as well as the materials and tools available to them.
 
-###Construction:
+### Construction:
 - Have students build their customized greenhouse designs using lumber, PVC pipes,  flexible clear marine vinyl, doors or polycarbonate panels, screws, nuts, bolts, and basic woodworking tools.
 - Encourage students to collaborate and problem-solve as they build their designs.
 
-###Evaluation:
+### Evaluation:
 - Have students present their customized greenhouse designs to the class and explain the principles behind them, as well as the environmental factors and materials used.
 - Discuss how the design of a greenhouse can impact ecosystem dynamics, functioning, and resilience.
 
-##Assessment:
+## Assessment:
 - Assess student participation in research, design, and construction.
 - Assess student understanding of greenhouse design principles and the impact of environmental factors on plant growth.
 - Assess student ability to problem-solve and collaborate in a group setting.
 
-##Conclusion:
+## Conclusion:
 - Wrap up the lesson by discussing the benefits of greenhouse gardening and the importance of designing a greenhouse that meets specific needs.
 - Encourage students to continue exploring greenhouse design and to apply what they've learned to their own gardening projects.
