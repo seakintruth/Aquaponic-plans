@@ -1,2 +1,2 @@
-# Aquaponic-3d-prints
-files for 3d printing aquaponic setups.
+# Aquaponic-plans
+Each directory is another plan for an Aquaponics System, see the Readme.md file in each directory for additional details
