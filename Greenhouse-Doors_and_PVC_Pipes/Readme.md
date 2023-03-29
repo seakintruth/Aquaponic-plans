@@ -1,4 +1,4 @@
-Greenhouse - Doors and PVC pipes by seakintruth on Thingiverse: https://www.thingiverse.com/thing:5934347
+## Greenhouse - Doors and PVC pipes by seakintruth on Thingiverse: https://www.thingiverse.com/thing:5934347
 
 The custom greenhouse design is a clever and inventive approach to repurposing old doors and reducing the quantity of lumber required for construction. Utilizing doors as the primary building material not only lessens waste in the environment but also lends a distinctive and charming character to the greenhouse. Please note that this design is not intended for printing and is instead intended for constructing a full-scale building. Prior to starting construction, please verify the local building permit requirements.
 
@@ -111,3 +111,6 @@ This is not all inclusive
 ## Conclusion:
 - Wrap up the lesson by discussing the benefits of greenhouse gardening and the importance of designing a greenhouse that meets specific needs.
 - Encourage students to continue exploring greenhouse design and to apply what they've learned to their own gardening projects.
+
+## Feedback on github
+Submit your issues and pull requests to https://github.com/seakintruth/Aquaponic-plans/tree/main/Greenhouse-Doors_and_PVC_Pipes
