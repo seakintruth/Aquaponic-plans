@@ -1,3 +1,11 @@
+// +-------------------------------------------------+
+// Title:           Greenhouse - Doors and PVC Pipes
+// Version:         0.35
+// Release Date:    2023-03-29 (ISO 8601)
+// Author:          Jeremy D. Gerdes
+// Version Control: 
+// License: This work is released with CC0 into the public domain.
+// https://creativecommons.org/publicdomain/zero/1.0/
 // Description:
 //
 /* [Building] */
