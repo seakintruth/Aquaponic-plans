@@ -1,13 +1,13 @@
 // +-------------------------------------------------+
-// Title:           Bell Siphon two piece with bulkhead adapter
-// Version:         0.99
-// Release Date:    2023-03-29 (ISO 8601)
+// Title:           Parametric Print at Once Bell Siphon
+// Version:         0.100
+// Release Date:    2023-02-16 (ISO 8601)
 // Author:          Jeremy D. Gerdes
 // Version Control: 
 // License: This work is released with CC0 into the public domain.
 // https://creativecommons.org/publicdomain/zero/1.0/
 // 
-// Todo:         1) Add snorkle with bucket inside the shroud (if siphon lock needs assistance to break) 
+// Todo:         1) Add snorkle with bucket option (if siphon lock needs assistance to break) 
 // +--------------------------------------------------+
 //
 // Description:
@@ -18,7 +18,7 @@ Wall_Thickness=2.4;
 /* [Stand Pipe] */
 // larger diameter allows for a higher flow rate, modifies bell and shrowd diameters (mm)
 Standpipe_Inner_Diameter=32.1;
-// Cone Heigth as a percentage of standpipe inner diammeter 1 = 100 %
+// Cone Heigth as a percentage of standpipe inner diammeter 1 = 100 %, 
 Cone_Height_Factor=1.18;
 // Total standpipe height (mm)
 Standpipe_Height=194.1;
@@ -31,6 +31,9 @@ Bell_Cutout_Width=7.1;
 // Height of the rectangle portion for the inflow arches on the bell
 Bell_Cutout_Height_Rectangle=10.1;
 /* [Shroud] */
+// How wide should the shroud (gravel gaurd) be? values less than (Bell's threads+5mm) are ignored.
+Shroud_Inner_Diameter=149.1;
+
 // Number of inflow arches per row of the shrowd - for more of a screen use 80
 Shroud_Cutout_Count_per_Row=18;
 // Width of inflow cuts on the shrowd - for more of a screen use 1.6 mm
@@ -47,10 +50,12 @@ Support_Width = 4.8;
 Support_Beam_Count = 3;
 //Row Count Recommend between 2 and 4
 Support_Row_Count = 4;
-let(Support_Row_Count = Support_Row_Count+1);
+
 /*[Bulkhead Connection Adapter]*/
 // Common Thread Pitch Value for Bulkhead Connection Adapter. Setting the Bulkhead_Thread_Pitch=0 forces the default ISO 724 coarse threading: Engineeringtoolbox.com/metric-threads-d_777.html
 Bulkhead_Thread_Pitch=6.0;
+// (0 to 2) ISO metric counter sink depth in wall thiknesses, set to any value less than 0 to remove counter sink
+Bulkhead_Bolt_Counter_Sink=.7;
 /* [Printer Settings] */
 // minimum object wall thickness shouldn't be less than 3x extruder_line_thickness this helps ensure a water tight seal (mm)
 Extruder_Line_Thickness=0.8;
@@ -66,8 +71,8 @@ Generate_Bulkhead_Connection=true;
 // Supports fix the standpipe to the bell, so 'Generate Standpipe and Bell' must be selected for this option to apply.
 Generate_Support=true;
 /*[Quality]*/
-// fn is the default number of facets to generate. This should be an even number 4 or more and less than 128. Four makes for a square everything, 80 or higher makes near perfect circles.
-$fn=80;
+// fn is the default number of facets to generate. This should be an even number 4 or more and less than 256. Four makes for a square everything, 80 or higher makes near perfect circles.
+$fn=128;
 
 // ----------------
 // constants 
@@ -78,6 +83,7 @@ C_MIN_STANDPIPE_HEIGHT=65+C_Null;
 C_MIN_FN=4+C_Null;
 C_MAX_FN=200+C_Null;
 C_Min_Shroud_Inflow_Rows=1+C_Null;
+
 /* this doesn't work as "The value for a regular variable is assigned at compile time and is thus static for all calls."
 // set minimum faces
 let($fn=(2*floor((1+clip($fn,C_MIN_FN,C_MAX_FN))/2)));
@@ -88,8 +94,8 @@ https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Other_Language_Features#$fa,_
 // force thickness to be at least 3 line thicknesses
 calculated_thickness = clip(Wall_Thickness,Extruder_Line_Thickness*3,Wall_Thickness+1);
 calculated_Bell_Cutout_Height_Rectangle =Bell_Cutout_Height_Rectangle;
-//+bulkhead_connection_thread_height;
 
+//+bulkhead_connection_thread_height;
 //If would be nice if this worked, keep getting syntax errors, so need to research functions
 //function iif ( condition,if_true,if_false ) = ( condition == true ) ?  if_true  : if_false
 // used to create a long support, this get's trimmed to bell or shroud if either is enabled
@@ -105,8 +111,16 @@ bell_cone_height=0.8*bell_inner_diameter;
 bulkhead_bolt_radius=calculated_thickness+(bell_inner_diameter-(Standpipe_Inner_Diameter/2))/2;
 bulkhead_bolt_diameter=2.25*calculated_thickness;
 bulkhead_connection_thread_height=4*calculated_thickness;
+
+// Shroud Diameter calculations
+C_Min_Shroud_Diameter = (bell_inner_diameter+3*calculated_thickness+Standpipe_Inner_Diameter/2)+C_Null ; //(2*calculated_thickness+bell_inner_diameter+Standpipe_Inner_Diameter/2)+5+C_Null; 
+
+calculated_shroud_diameter = clip(Shroud_Inner_Diameter,C_Min_Shroud_Diameter,Shroud_Inner_Diameter);
+
+Bulkhead_Bolt_Counter_Sink_Wall_Thicknesses  = clip(Bulkhead_Bolt_Counter_Sink,-0.1,2);
+
 // new pieces
-new_piece_distance=bell_inner_diameter+Standpipe_Inner_Diameter/2+7*calculated_thickness;
+new_piece_distance=calculated_shroud_diameter+7*calculated_thickness;
 
 /* 
 ------------------
@@ -146,18 +160,6 @@ union(){
 // +------------------------------------+
 
 module create_supports(){
-  // add supports to bell cutout feet
-    polar_array(0,Bell_Cutout_Count){
-    translate([0,(Standpipe_Inner_Diameter+2*calculated_thickness)/2,calculated_thickness*4]){
-      //l=((PI*D) / n) - Cw
-      supportFoot(
-        l = calculated_thickness/2, // ((PI*bell_inner_diameter)/Bell_Cutout_Count)-Bell_Cutout_Width,
-        w = (bell_inner_diameter)/2-(Standpipe_Inner_Diameter+(0.5*calculated_thickness))/2,
-        h = Bell_Cutout_Height_Rectangle+1.5*Bell_Cutout_Width
-      );
-    }
-  }
-  
   //add supports
   difference(){
     // support out to the bell remove remaining, don't connect supports to shroud,
@@ -188,9 +190,11 @@ module create_shroud(){
           translate([0,0,Standpipe_Height/2]){
             hollow_pipe(
               Standpipe_Height
-              ,bell_inner_diameter+3*calculated_thickness+Standpipe_Inner_Diameter/2
+              ,calculated_shroud_diameter
               ,calculated_thickness
             );
+            //calculated_shroud_diameter used to be {bell_inner_diameter+3*calculated_thickness+Standpipe_Inner_Diameter/2} before it was made into a parameter
+     
           }
         }
         create_shroud_cutouts();
@@ -220,20 +224,28 @@ module create_bulkhead_connection(){
             difference(){
                 RodEnd(
                     //diameter=bell_inner_diameter+(10*calculated_thickness), 
-                    diameter=(2*calculated_thickness+bell_inner_diameter+3*calculated_thickness+Standpipe_Inner_Diameter/2),
+                    diameter=calculated_shroud_diameter+2*calculated_thickness, //(2*calculated_thickness+bell_inner_diameter+3*calculated_thickness+Standpipe_Inner_Diameter/2),
                     height=(2*calculated_thickness+bulkhead_connection_thread_height),
                     thread_len=(bulkhead_connection_thread_height),
                     thread_diam=(calculated_thickness+bell_inner_diameter+Standpipe_Inner_Diameter/2),
                     thread_pitch=Bulkhead_Thread_Pitch
                 );
                 union(){
+                    // standpipe outflow hole
                     cylinder(d=Standpipe_Inner_Diameter,h=10*calculated_thickness);
+                    // bolt/screw holes with counter sink to affix bulkhead connector.  
                     polar_array(bulkhead_bolt_radius,5){
-                        cylinder(d=bulkhead_bolt_diameter,h=10*calculated_thickness);
+                        union(){
+                            cylinder(d=bulkhead_bolt_diameter,h=10*calculated_thickness);
+                   translate([0,0,4*calculated_thickness-Bulkhead_Bolt_Counter_Sink_Wall_Thicknesses*calculated_thickness]){
+                       // standard cone creates a 90 degree counter sink, this is ISO Metric
+                        cone_solid(calculated_thickness+bulkhead_bolt_diameter,10*calculated_thickness, true);
+                            }
+                            
+                        } 
                     }
                 }
             }
-            
         }
     }
 }
@@ -254,6 +266,18 @@ module create_shroud_cutouts(){
 }
 
 module create_bell(){
+  // add supports to bell cutout feet
+  polar_array(0,Bell_Cutout_Count){
+    translate([0,(Standpipe_Inner_Diameter+2*calculated_thickness)/2,calculated_thickness*4]){
+      //l=((PI*D) / n) - Cw
+      supportFoot(
+        l = calculated_thickness/2, // ((PI*bell_inner_diameter)/Bell_Cutout_Count)-Bell_Cutout_Width,
+        w = (bell_inner_diameter)/2-(Standpipe_Inner_Diameter+(0.5*calculated_thickness))/2,
+        h = Bell_Cutout_Height_Rectangle+1.5*Bell_Cutout_Width
+      );
+    };
+  };
+    
   difference(){
     union(){ //add
       translate([0,0,(Standpipe_Height+bulkhead_connection_thread_height-calculated_thickness)/2]){
