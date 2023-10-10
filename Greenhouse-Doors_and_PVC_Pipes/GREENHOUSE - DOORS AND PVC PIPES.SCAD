@@ -1,6 +1,6 @@
 // +-------------------------------------------------+
 // Title:           Greenhouse - Doors and PVC Pipes
-// Version:         0.35
+// Version:         0.4
 // Release Date:    2023-03-29 (ISO 8601)
 // Author:          Jeremy D. Gerdes
 // Version Control: 
@@ -22,8 +22,9 @@ door_height=79.5;
 rib_spacing = 16.1;
 // (inches) Rafter height needs to be adjusted to match the elipse height of the PVC Pipe
 rafter_height = 27.1;
-// (inches) Rafter angle needs to be adjusted to match the elipse height of the PVC Pipe
-rafter_angle = 25.1;
+// {WIP} rafters have a center peak, if unselected then the east most (positive) wall will be the peak
+center_peak = true;
+
 /*[Quality]*/
 // fn is the default number of facets to generate. This should be an even number 4 or more and less than 128. Four makes for a square everything, 80 or higher makes near perfect circles.
 $fn=80;
@@ -72,21 +73,30 @@ module build_rafters(){
 }
 
 module single_rafter(){
+    
+    //Rafter_Angle for a center roof peak can be calculated
+//  cot(A) = cos(A)/sin(A) = b/a (adj/opp)
+//  tan(A) = a/b
+//  A = arctan(a/b)
+// a = rafter_height
+// b = building_width/2    
+rafter_angle = atan((rafter_height-4)/(building_width/2));    
+    //c=a/sin(A)    
     //degree angled board one
-    translate ([3,3.5,door_height+12]) 
+    translate ([3,3.5,door_height+12+2]) 
         rotate([rafter_angle,0,-90])
-            2by4(1/2*building_width+1/13*building_width);
+            2by4((rafter_height)/sin(rafter_angle));
     //degree angled board two
     mirror([90,0,0])
         translate ([
             -building_width-6,
             3.5,
-            (door_height+12)
-        ]) 
+            (door_height+12+2)
+        ])
             rotate([rafter_angle,0,-90])
-                2by4(1/2*building_width+1/13*building_width);
+                2by4((rafter_height)/sin(rafter_angle));
     //Verital Beam
-    translate ([1/2*building_width+7,3.5,door_height+12]) 
+    translate ([1/2*building_width+7,3.5,door_height+12+4]) 
         rotate([90,0,-90])
             2by6(rafter_height );
 };
