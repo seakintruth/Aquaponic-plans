@@ -1,7 +1,7 @@
 // +-------------------------------------------------+
 // Title:           Greenhouse - Doors and PVC Pipes
-// Version:         0.4
-// Release Date:    2023-03-29 (ISO 8601)
+// Version:         0.5
+// Release Date:    2023-10-09 (ISO 8601)
 // Author:          Jeremy D. Gerdes
 // Version Control: 
 // License: This work is released with CC0 into the public domain.
@@ -22,7 +22,7 @@ door_height=79.5;
 rib_spacing = 16.1;
 // (inches) Rafter height needs to be adjusted to match the elipse height of the PVC Pipe
 rafter_height = 27.1;
-// {WIP} rafters have a center peak, if unselected then the east most (positive) wall will be the peak
+// rafters have a center peak, if unselected then the east most (positive) wall will be the peak, and PVC is replaced with rafters
 center_peak = true;
 
 /*[Quality]*/
@@ -66,47 +66,70 @@ module build_shed(){
 }
 
 module build_rafters(){
+    single_rafter();
+    if ( center_peak ) {
         //Length of building
         translate([1/2*building_width+3.5,3.5,door_height+5.5+rafter_height]) 2by6(building_length);      
-        single_rafter();
         translate([0,building_length,0]) single_rafter();
+    } else {
+        //Length of building
+        translate([building_width+3.5,3.5,door_height+5.5+rafter_height+6]) 2by6(building_length);      
+        horizontal_array( building_length/(rib_spacing),rib_spacing ,0) 
+            single_rafter();
+    };  
 }
 
 module single_rafter(){
-    
-    //Rafter_Angle for a center roof peak can be calculated
-//  cot(A) = cos(A)/sin(A) = b/a (adj/opp)
-//  tan(A) = a/b
-//  A = arctan(a/b)
-// a = rafter_height
-// b = building_width/2    
-rafter_angle = atan((rafter_height-4)/(building_width/2));    
-    //c=a/sin(A)    
-    //degree angled board one
-    translate ([3,3.5,door_height+12+2]) 
-        rotate([rafter_angle,0,-90])
-            2by4((rafter_height)/sin(rafter_angle));
-    //degree angled board two
-    mirror([90,0,0])
-        translate ([
-            -building_width-6,
-            3.5,
-            (door_height+12+2)
-        ])
+    if ( center_peak ) {
+        //Rafter_Angle for a center roof peak can be calculated
+        //  tan(A) = a/b
+        //  A = arctan(a/b)
+        // a = rafter_height
+        // b = building_width/2    
+        rafter_angle = atan((rafter_height)/(building_width/2));    
+        //c=a/sin(A)    
+        //degree angled board one
+        translate ([3,3.5,door_height+12]) 
+            rotate([rafter_angle,0,-90])
+                2by4(2+(rafter_height)/sin(rafter_angle));
+        //degree angled board two
+        mirror([90,0,0])
+            translate ([
+                -building_width-6,
+                3.5,
+                (door_height+12)
+            ])
+                rotate([rafter_angle,0,-90])
+                    2by4(2+(rafter_height)/sin(rafter_angle));
+        //Verital Beam
+        translate ([1/2*building_width+7,3.5,door_height+12]) 
+            rotate([90,0,-90])
+                2by6(rafter_height );
+    } else {
+        //Rafter_Angle for a center roof peak can be calculated
+        // tan(A) = a/b
+        // A = arctan(a/b)
+        // a = rafter_height
+        // b = building_width/2    
+        rafter_angle = atan((rafter_height)/(building_width));    
+        //c=a/sin(A)    
+        //degree angled board one
+        translate ([3,3.5,door_height+12+2]) 
             rotate([rafter_angle,0,-90])
                 2by4((rafter_height)/sin(rafter_angle));
-    //Verital Beam
-    translate ([1/2*building_width+7,3.5,door_height+12+4]) 
-        rotate([90,0,-90])
-            2by6(rafter_height );
+        //Verital Beam
+        translate ([3.5+building_width,3.5,door_height+12+4]) 
+            rotate([90,0,-90])
+                2by4(rafter_height);
+    };
 };
 
 
 module build_pvc_ribbs(){
-    pvc_ribb();
-    horizontal_array( building_length/(rib_spacing),rib_spacing ,0
-    ){ 
+    if ( center_peak ) {
         pvc_ribb();
+        horizontal_array( building_length/(rib_spacing),rib_spacing ,0) 
+            pvc_ribb();
     };
 };
 
