@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document id="11Fe01Z_k8X-Q9vXQKEPsDwNq53k-eKc2">
+	<name>Gerdes Aquaponics</name>
+	<StyleMap id="__managed_style_39D2274ACE347122C262">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_4DE5158BB1347122C262</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_5EE0B74884347122C262</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_20F3B055FE347122C264">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ffa21f7b</color>
+				<width>6</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_147466630C347122C264">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ffa21f7b</color>
+				<width>4</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_4DE5158BB1347122C262">
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>4</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_09DD80E26C347122C264">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_147466630C347122C264</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_20F3B055FE347122C264</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_2FD9E23334347122C261">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.0.26.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>6</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_1F2E99CB33347122C261">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.0.26.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>4</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_5EE0B74884347122C262">
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>6</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_008792A7F8347122C261">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_1F2E99CB33347122C261</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_2FD9E23334347122C261</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Placemark id="072FCD90963468FA896B">
+		<name>924 Thompson Way Plot</name>
+		<description><![CDATA[<div>Plot<br></div>]]></description>
+		<LookAt>
+			<longitude>-76.17838538595579</longitude>
+			<latitude>36.81055580036654</latitude>
+			<altitude>11.87614331013592</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>69.28039402228023</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_008792A7F8347122C261</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-76.17815783936551,36.81035635235504,0 -76.17817378077602,36.81081563695068,0 -76.17825962627214,36.81084368936812,0 -76.17828930210659,36.81084137030569,0 -76.17831925588504,36.81079214506369,0 -76.17836781146214,36.81070286321915,0 -76.17843349655914,36.81056532297194,0 -76.17846563268253,36.81046409477944,0 -76.17849335514821,36.81036855882172,0 -76.17838075413223,36.81036595532781,0 -76.17815783936551,36.81035635235504,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark id="0C2DFDA8703469211DC7">
+		<name>Home</name>
+		<LookAt>
+			<longitude>-76.1783187558942</longitude>
+			<latitude>36.81048303492107</latitude>
+			<altitude>12.22591962664267</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>35.80625334333035</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_09DD80E26C347122C264</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-76.17833663117744,36.81049505104555,0 -76.17835792162128,36.81041274991848,0 -76.17819123171017,36.81039448826221,0 -76.17817750561375,36.81047754647262,0 -76.17833663117744,36.81049505104555,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark id="059169067C34691E340B">
+		<name>Wood Shop Shed</name>
+		<LookAt>
+			<longitude>-76.17823960347619</longitude>
+			<latitude>36.81063728760616</latitude>
+			<altitude>15.62488233715979</altitude>
+			<heading>0</heading>
+			<tilt>25.75</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>29.85103573023025</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_39D2274ACE347122C262</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-76.17818539573197,36.81064772959329,0 -76.1782241436679,36.81064494791976,0 -76.17822416331195,36.81058704863643,0 -76.17818451148972,36.81058946746165,0 -76.17818539573197,36.81064772959329,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark id="04DD07CFDD346903B863">
+		<name>Rainwater Collection Tank</name>
+		<description><![CDATA[<div>Rainwater collection tank rough location and size within several feet.<br></div>]]></description>
+		<LookAt>
+			<longitude>-76.17821468994583</longitude>
+			<latitude>36.81033696285677</latitude>
+			<altitude>16.99297602051216</altitude>
+			<heading>5.723766841911076e-09</heading>
+			<tilt>42.24998291063925</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>19.21871183752501</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_008792A7F8347122C261</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-76.17817121374902,36.81037933009206,0 -76.17818025236929,36.81038077937665,0 -76.17818806952565,36.81037734346195,0 -76.17818962771992,36.81036933489967,0 -76.17818461897467,36.81036398570446,0 -76.17817623878672,36.81036246159736,0 -76.17816775423998,36.81036559265758,0 -76.17816621357838,36.8103731661081,0 -76.17817121374902,36.81037933009206,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark id="02C002E3113468FF651F">
+		<name>Shed - Aquaponics</name>
+		<description><![CDATA[<div>8 ft by 22 ft aquaponics shed Rough location within a foot or so.<br></div>]]></description>
+		<LookAt>
+			<longitude>-76.17830844300083</longitude>
+			<latitude>36.81041070158852</latitude>
+			<altitude>12.82278604888503</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>25.00598746286415</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_008792A7F8347122C261</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-76.17825529171563,36.81037512599322,0 -76.17825305092273,36.81039444992155,0 -76.17833573318386,36.81040054093929,0 -76.17833782871426,36.81038027585669,0 -76.17825529171563,36.81037512599322,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark id="09E9E3A29B3469141C72">
+		<name>Solids Filtration</name>
+		<LookAt>
+			<longitude>-76.17833008079553</longitude>
+			<latitude>36.81040128453341</latitude>
+			<altitude>6.219730921782953</altitude>
+			<heading>5.002763718327702e-09</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>25.00149680298819</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_39D2274ACE347122C262</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-76.17833538302162,36.8103767019328,0 -76.1783337043446,36.81037514898455,0 -76.17833169800953,36.81037609218266,0 -76.17833153680462,36.81037765746213,0 -76.17833400332636,36.81037827677498,0 -76.17833538302162,36.8103767019328,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+	<Placemark id="0A0DAACB2D346927EEAC">
+		<name>Sump</name>
+		<LookAt>
+			<longitude>-76.17834144205787</longitude>
+			<latitude>36.81040196328717</latitude>
+			<altitude>6.510215941487454</altitude>
+			<heading>0</heading>
+			<tilt>0</tilt>
+			<gx:fovy>35</gx:fovy>
+			<range>25.00089997980467</range>
+			<altitudeMode>absolute</altitudeMode>
+		</LookAt>
+		<styleUrl>#__managed_style_39D2274ACE347122C262</styleUrl>
+		<Polygon>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-76.17834156622875,36.81037148256172,0 -76.17834362869006,36.81036979191035,0 -76.17834219120887,36.81036767676282,0 -76.17833973451614,36.81036755107865,0 -76.17833800455816,36.81036894648655,0 -76.17833841890383,36.81037122729476,0 -76.17834156622875,36.81037148256172,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+</Document>
+</kml>
