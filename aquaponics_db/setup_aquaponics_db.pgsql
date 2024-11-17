@@ -25,6 +25,9 @@ It creates tables for various system components, sensor types, metadata, and dat
 -- All table creations
 DO $$
 BEGIN
+    -- ********************************
+    -- Create tables 
+    -- ********************************
     -- Create log_table if it doesn't exist
     IF NOT EXISTS (
         SELECT 1 FROM pg_catalog.pg_class c
@@ -156,24 +159,6 @@ BEGIN
         RAISE NOTICE 'Table systemwide_alert already exists.';
     END IF;
 
-END $$;
-
--- Schedule db status logging 
-
--- Unschedule the status job running every 5 minutes if it already exists
-DO $$
-DECLARE
-  status_job_id INTEGER;
-BEGIN
-  SELECT jobid INTO status_job_id FROM cron.job WHERE command = $$INSERT INTO log (log_entry,log_category) VALUES ('status','up');$$;
-  IF status_job_id IS NOT NULL THEN
-      PERFORM cron.unschedule(status_job_id);
-      INSERT INTO log (log_entry, log_category) VALUES ('Status job unscheduled', 'cron.unschedule');
-  END IF;
-
-  -- Schedule the status job to run every 5 minutes
-  SELECT cron.schedule('*/5 * * * *', $$INSERT INTO log (log_entry,log_category) VALUES ('status','up');$$) INTO status_job_id;
-  INSERT INTO log (log_entry, log_category) VALUES ('Status job scheduled', 'cron.schedule');
 END $$;
 
 -- Insert data into tables

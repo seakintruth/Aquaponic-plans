@@ -1,46 +1,77 @@
-/*
-This PL/pgSQL block will:
-
-    - Check for the existence of the 'log' table.
-    - Quit if the 'log' table if it doesn't exist, with a comment indicating it should created by setup_aquaponics_db.sql.
-    - Schedule a job to run every 5 minutes to insert the status of aquaponics_db into the 'log' table.
-    - Log the scheduling of this job in the 'log' table with a category of 'cron.schedule'.
-    - Exit if the 'log' table does not exist.
-
-Remember, if pg_cron doesn't find a job to run at the exact time specified (due to the minute boundary), it will run the job as soon as possible after that time. So, if you run this script at 14:32:45, the job might not execute exactly at 14:33:45 but rather at the start of the next minute, 14:34:00.
-*/
 DO $$
 DECLARE
-    job_row RECORD;  -- Declare job_row as RECORD
+    job_id INTEGER;
 BEGIN
-    -- Check if log table exists, if not, exit
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_catalog.pg_class c
-        JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
-        WHERE n.nspname = 'public' AND c.relname = 'log'
-    ) THEN
-        RAISE EXCEPTION 'log table does not exist. Unable to proceed. Table log must be created by setup_aquaponics_db.sql';
-    END IF;
+    -- Create the schema if it doesn't exist
+    CREATE SCHEMA IF NOT EXISTS cron_management;
 
-    -- Unschedule all existing cron jobs
-    FOR job_row IN SELECT jobid FROM cron.job
-    LOOP
-        -- job_row is already a record, so we can directly use job_row.jobid
-        PERFORM cron.unschedule(job_row.jobid);
-    END LOOP;
-    INSERT INTO log (log_entry, log_category) VALUES ('All existing cron jobs have been unscheduled.', 'cron.unschedule_all');
+    -- Function to check if log table exists
+    CREATE OR REPLACE FUNCTION cron_management.check_log_table_exists()
+    RETURNS BOOLEAN AS $$
+    BEGIN
+        RETURN EXISTS (SELECT FROM pg_tables WHERE tablename = 'log' AND schemaname = 'public');
+    END;
+    $$ LANGUAGE plpgsql;
 
-    -- Schedule the job to run every 5 minutes
-    INSERT INTO log (log_entry, log_category)
-    SELECT 
-        cron.schedule(
-            '*/5 * * * *', 'INSERT INTO log (log_entry) VALUES (''up'',''status'');'
-        ) AS log_entry,
-        'cron.schedule' AS log_category;
+    -- Function to unschedule all cron jobs
+    CREATE OR REPLACE FUNCTION cron_management.unschedule_all_jobs()
+    RETURNS VOID AS $$
+    BEGIN
+        FOR job_row IN SELECT jobid FROM cron.job
+        LOOP
+            PERFORM cron.unschedule(job_row.jobid);
+        END LOOP;
+        INSERT INTO log (log_entry, log_category) VALUES ('All existing cron jobs have been unscheduled.', 'cron.unschedule_all');
+    END;
+    $$ LANGUAGE plpgsql;
 
-EXCEPTION
-    WHEN OTHERS THEN
-        RAISE NOTICE 'An error occurred: %', SQLERRM;
-        -- Optionally, log the error to another table or perform cleanup here
-        RETURN;  -- Exit the function
+    -- Function to schedule a single job with logging
+    CREATE OR REPLACE FUNCTION cron_management.schedule_job(
+        job_schedule TEXT,
+        job_command TEXT,
+        job_name TEXT
+    )
+    RETURNS INTEGER AS $$
+    DECLARE
+        job_id INTEGER;
+    BEGIN
+        -- Unschedule the job if it already exists
+        SELECT jobid INTO job_id FROM cron.job WHERE command = job_command;
+        IF job_id IS NOT NULL THEN
+            PERFORM cron.unschedule(job_id);
+            INSERT INTO log (log_entry, log_category) VALUES ('Job ' || job_name || ' unscheduled', 'cron.unschedule');
+        END IF;
+
+        -- Schedule the job
+        job_id := cron.schedule(job_schedule, job_command);
+        INSERT INTO log (log_entry, log_category)
+        VALUES (format('Job %s scheduled with job ID: %s', job_name, job_id), 'cron.schedule');
+
+        RETURN job_id;
+    END;
+    $$ LANGUAGE plpgsql;
+
+    -- Main procedure to manage cron jobs
+    CREATE OR REPLACE FUNCTION cron_management.manage_cron_jobs()
+    RETURNS VOID AS $$
+    BEGIN
+        IF NOT cron_management.check_log_table_exists() THEN
+            RAISE EXCEPTION 'log table does not exist. Unable to proceed. Table log must be created by setup_aquaponics_db.sql';
+        END IF;
+
+        PERFORM cron_management.unschedule_all_jobs();
+
+        -- Schedule jobs here
+        job_id := cron_management.schedule_job('*/5 * * * *', 'INSERT INTO log (log_entry) VALUES (''up'',''status'');', 'DB_Status');
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE NOTICE 'An error occurred: %', SQLERRM;
+            RETURN;
+    END;
+    $$ LANGUAGE plpgsql;
+
+    -- Call the main procedure
+    PERFORM cron_management.manage_cron_jobs();
+
 END $$;
