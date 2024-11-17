@@ -3,7 +3,7 @@ MIT License Noticeflo
 Copyright (c) 2024 Jeremy D. Gerdes <seakintruth@gmail.com>
 See full license in the repository.
 
-Script Version: V0.2
+Script Version: V0.2.1
 Author: Jeremy D. Gerdes
 Email: seakintruth@gmail.com
 */

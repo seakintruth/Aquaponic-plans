@@ -1,3 +1,13 @@
+/*
+MIT License Noticeflo
+Copyright (c) 2024 Jeremy D. Gerdes <seakintruth@gmail.com>
+See full license in the repository.
+
+Script Version: V0.1.0
+Author: Jeremy D. Gerdes
+Email: seakintruth@gmail.com
+*/
+
 DO $$
 DECLARE
     job_id INTEGER;

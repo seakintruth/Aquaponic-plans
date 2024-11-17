@@ -1,3 +1,13 @@
+/*
+MIT License Notice
+Copyright (c) [Year] Jeremy D. Gerdes <seakintruth@gmail.com>
+See full license in the repository.
+
+Script Version: V0.1.0 - Updated to use aquaponics_db_fake schema for fake data.
+Author: Jeremy D. Gerdes
+Email: seakintruth@gmail.com
+*/
+
 -- Insert log
 INSERT INTO log (log_entry,log_category) VALUES ('Initializing::Reference and Example Data','SETUP');
 

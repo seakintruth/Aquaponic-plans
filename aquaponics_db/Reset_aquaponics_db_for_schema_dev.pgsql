@@ -4,7 +4,7 @@ MIT License Notice
 Copyright (c) 2024 Jeremy D. Gerdes <seakintruth@gmail.com>
 See full license in the repository.
 
-Script Version: V0.1 (Reset)
+Script Version: V0.1.1 (Reset)
 Author: Jeremy D. Gerdes
 Email: seakintruth@gmail.com
 
