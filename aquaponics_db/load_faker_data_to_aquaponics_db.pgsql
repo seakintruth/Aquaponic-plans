@@ -2,7 +2,7 @@
 
 /*
 MIT License Notice
-Copyright (c) [Year] Jeremy D. Gerdes <seakintruth@gmail.com>
+Copyright (c) 2024 Jeremy D. Gerdes <seakintruth@gmail.com>
 See full license in the repository.
 
 Script Version: V0.3.0 - Updated to use aquaponics_db_fake schema for fake data.

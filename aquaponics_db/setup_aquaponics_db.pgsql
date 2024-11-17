@@ -218,9 +218,6 @@ BEGIN
 
 END $$;
 
--- Insert data into tables
--- ... (Your existing INSERT statements here, adjusted for singular table names)
-
 -- Create a regular materialized view
 CREATE MATERIALIZED VIEW IF NOT EXISTS hourly_sensor_data AS
 SELECT 
