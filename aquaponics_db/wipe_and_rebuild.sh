@@ -27,7 +27,7 @@ execute_script() {
             exit 1
         }
     elif [[ "$script" == *.py ]]; then
-        python "$script" || {
+        python3 "$script" || {
             echo "Error executing $script. Exiting."
             exit 1
         }
