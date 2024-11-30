@@ -23,7 +23,7 @@ BEGIN
     FOR index_name IN 
         SELECT indexname FROM pg_indexes WHERE schemaname = 'public' AND indexname IN (
             'idx_sensor_type_id', 
-            'idx_zone_id', 
+            'idx_area_id', 
             'idx_system_id', 
             'idx_hourly_sensor_data_bucket_sensor_id'
         )
@@ -42,20 +42,34 @@ BEGIN
     FOR table_name IN 
         SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename IN (
             'log', 
-            'zone', 
+            'sensor', 
+            'geo_ref',
+            'area', 
             'system', 
             'sensor_type', 
-            'sensor', 
             'sensor_datum', 
-            'systemwide_alert'
+            'systemwide_alert',
+            'label',
+            'zone'
         )
     LOOP
         EXECUTE format('DROP TABLE IF EXISTS %I CASCADE', table_name.tablename);
     END LOOP;
 
+    -- Drop the materialized views
+    FOR view_name IN 
+        SELECT matviewname FROM pg_matviews WHERE schemaname = 'public' AND matviewname IN (
+            'second_by_second_last_15_minutes',
+            'minute_by_minute_last_24_hours',
+            'hourly_last_week'
+        )
+    LOOP
+        EXECUTE format('DROP MATERIALIZED VIEW IF EXISTS %I', view_name.matviewname);
+    END LOOP;
+
     -- Clean up any remaining cron jobs related to the schema
     FOR job_id IN 
-        SELECT jobid FROM cron.job WHERE command LIKE 'INSERT INTO log (log_entry,log_category) VALUES (''status'',''up'');'
+        SELECT jobid FROM cron.job
     LOOP
         PERFORM cron.unschedule(job_id.jobid);
     END LOOP;
