@@ -3,18 +3,17 @@ MIT License Notice
 Copyright (c) 2024 Jeremy D. Gerdes <seakintruth@gmail.com>
 See full license in the repository.
 
-Script Version: V0.2.2
+Script Version: V 1.2
 Author: Jeremy D. Gerdes
 Email: seakintruth@gmail.com
-*/
 
-/*
+Special thanks to the spirit of Douglas Adams from X (GROK 2) for the inspiration behind this script's wit and wisdom.
+
 PGSQL Dependencies 
 -> aquaponics_db=# \dx;
                                                List of installed extensions
     Name     | Version |   Schema   |                                     Description   
  adminpack   | 2.1     | pg_catalog | administrative functions for PostgreSQL                   
- faker       | 0.5.3   | public     | Wrapper for the Faker Python library
  pg_cron     | 1.6     | pg_catalog | Job scheduler for PostgreSQL
  plpgsql     | 1.0     | pg_catalog | PL/pgSQL procedural language
  plpython3u  | 1.0     | pg_catalog | PL/Python3U untrusted procedural language
@@ -249,9 +248,12 @@ BEGIN
             AND (sd.next_time IS NULL OR s.second_timestamp < sd.next_time)
         ORDER BY s.second_timestamp, sd.sensor_id;
 
-        CREATE INDEX IF NOT EXISTS idx_second_by_second_last_15_minutes ON second_by_second_last_15_minutes (time, sensor_id);
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_second_by_second_last_15_minutes ON second_by_second_last_15_minutes (time, sensor_id);
         
         REFRESH MATERIALIZED VIEW second_by_second_last_15_minutes;
+
+
+
     EXCEPTION WHEN others THEN
         RAISE NOTICE 'Error handling second_by_second_last_15_minutes: %', SQLERRM;
     END;
@@ -285,7 +287,7 @@ BEGIN
             AND (sd.next_time IS NULL OR m.minute_timestamp < sd.next_time)
         ORDER BY m.minute_timestamp, sd.sensor_id;
 
-        CREATE INDEX IF NOT EXISTS idx_minute_by_minute_last_24_hours ON minute_by_minute_last_24_hours (time, sensor_id);
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_minute_by_minute_last_24_hours ON minute_by_minute_last_24_hours (time, sensor_id);
         
         REFRESH MATERIALIZED VIEW minute_by_minute_last_24_hours;
     EXCEPTION WHEN others THEN
@@ -321,7 +323,7 @@ BEGIN
             AND (sd.next_time IS NULL OR h.hour_timestamp < sd.next_time)
         ORDER BY h.hour_timestamp, sd.sensor_id;
 
-        CREATE INDEX IF NOT EXISTS idx_hourly_last_week ON hourly_last_week (time, sensor_id);
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_hourly_last_week ON hourly_last_week (time, sensor_id);
         
         REFRESH MATERIALIZED VIEW hourly_last_week;
     EXCEPTION WHEN others THEN

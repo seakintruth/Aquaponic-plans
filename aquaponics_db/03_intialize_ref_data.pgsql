@@ -91,7 +91,6 @@ BEGIN
                 WHEN 'Air Flow' THEN 10
                 WHEN 'Power Draw' THEN 1
                 WHEN 'Water Flow Rate' THEN 10
-
                 -- Aquaponics Sensors
                 WHEN 'pH' THEN 100
                 WHEN 'Water Level' THEN 1
@@ -123,8 +122,6 @@ BEGIN
                 WHEN 'Smoke Detector' THEN 1
                 WHEN 'Occupancy Sensor' THEN 1
                 WHEN 'Sound Level' THEN 10
-                WHEN 'Temperature (Home)' THEN 10  -- Added scale_factor for Home Temperature
-                WHEN 'Humidity (Home)' THEN 10     -- Added scale_factor for Home Humidity
                 -- ELSE THEN 1
             END AS scale_factor,
             CASE v
@@ -135,7 +132,6 @@ BEGIN
                 WHEN 'Air Flow' THEN 'm/s'
                 WHEN 'Power Draw' THEN 'W'
                 WHEN 'Water Flow Rate' THEN 'L/min'
-
                 -- Aquaponics Sensors
                 WHEN 'pH' THEN 'pH'
                 WHEN 'Water Level' THEN 'cm'
@@ -167,8 +163,6 @@ BEGIN
                 WHEN 'Smoke Detector' THEN 'binary'
                 WHEN 'Occupancy Sensor' THEN 'binary'
                 WHEN 'Sound Level' THEN 'dB'
-                WHEN 'Temperature (Home)' THEN '°C'  -- Added unit for Home Temperature
-                WHEN 'Humidity (Home)' THEN '%'      -- Added unit for Home Humidity
                 -- Else 'Unknown'
             END AS unit,
             -- Adding capture_after_delta_percent
@@ -177,8 +171,6 @@ BEGIN
                 WHEN 'Humidity' THEN 1.0 -- 1% change
                 WHEN 'pH' THEN 0.1 -- 0.1% change
                 WHEN 'Dissolved Oxygen' THEN 1.0 -- 1% change
-                WHEN 'Temperature (Home)' THEN 0.5 -- 0.5% change for Home Temperature
-                WHEN 'Humidity (Home)' THEN 1.0 -- 1% change for Home Humidity
                 ELSE 2.0 -- Default 2% change for others
             END AS capture_after_delta_percent
         FROM (VALUES 
@@ -193,7 +185,7 @@ BEGIN
             -- Weather Station Sensors
             ('Barometric Pressure'),('Wind Speed'), ('Wind Direction'), ('Rain Gauge'), ('Solar Radiation'), ('UV Index'), ('Leaf Wetness'),
             -- Home Automation Sensors
-            ('Motion Detection'), ('Door/Window Sensor'), ('Smoke Detector'), ('Temperature (Home)'), ('Humidity (Home)'),
+            ('Motion Detection'), ('Door/Window Sensor'), ('Smoke Detector') ,
             ('Occupancy Sensor'), ('Sound Level')
         ) AS types(v)
         WHERE NOT EXISTS (SELECT 1 FROM sensor_type WHERE type_name = v);
