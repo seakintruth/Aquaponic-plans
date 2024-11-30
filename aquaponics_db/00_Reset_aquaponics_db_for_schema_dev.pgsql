@@ -25,15 +25,18 @@ BEGIN
             'idx_sensor_type_id', 
             'idx_area_id', 
             'idx_system_id', 
-            'idx_hourly_sensor_data_bucket_sensor_id'
+            'idx_hourly_sensor_data_bucket_sensor_id',
+            'label_assignment.idx_label_assignment_entity',
+            'label_assignment.label_assignment_pkey',
+            'label_assignment.unique_label_assignment'
         )
     LOOP
         EXECUTE format('DROP INDEX IF EXISTS %I', index_name.indexname);
     END LOOP;
 
-    -- Drop the materialized view
+    -- Drop all materialized views
     FOR view_name IN 
-        SELECT matviewname FROM pg_matviews WHERE schemaname = 'public' AND matviewname = 'hourly_sensor_data'
+        SELECT matviewname FROM pg_matviews WHERE schemaname = 'public' AND matviewname in ('hourly_sensor_data','minute_by_minute_last_24_hours','second_by_second_last_15_minutes')
     LOOP
         EXECUTE format('DROP MATERIALIZED VIEW IF EXISTS %I', view_name.matviewname);
     END LOOP;
@@ -50,6 +53,7 @@ BEGIN
             'sensor_datum', 
             'systemwide_alert',
             'label',
+            'label_assignment',
             'zone'
         )
     LOOP
