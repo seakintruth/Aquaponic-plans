@@ -3,7 +3,7 @@ MIT License Notice
 Copyright (c) [Year] Jeremy D. Gerdes <seakintruth@gmail.com>
 See full license in the repository.
 
-Script Version: V0.1.4 - Updated to include weather station and home automation sensor types with error handling.
+Script Version: V0.1.5 - Updated to include weather station and home automation sensor types with error handling.
 Author: Jeremy D. Gerdes
 Email: seakintruth@gmail.com
 */
