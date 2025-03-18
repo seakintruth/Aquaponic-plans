@@ -1,3 +1,6 @@
 #VS Code artifacts
 *.devdbrc*
 *.vscode*
+
+# Config files, holds keys and other content not placed on github
+*Config.ini*

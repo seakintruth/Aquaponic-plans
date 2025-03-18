@@ -46,7 +46,6 @@ def calculate_straight_line_depreciation(amount, amortization_years, start_date,
     if report_date < start_date or report_date >= end_date:
         return 0.0
     annual_depreciation = amount / amortization_years
-    # Prorate for partial years
     if report_date.year == start_year:
         days_in_year = (datetime(start_year + 1, 1, 1) - datetime(start_year, 1, 1)).days
         days_active = (datetime(start_year + 1, 1, 1) - start_date).days
@@ -87,7 +86,6 @@ def get_user_inputs():
     last_num_plants = previous_data.get("last_num_plants", 300)
     last_yield_per_plant = previous_data.get("last_yield_per_plant", DEFAULT_YIELD_PER_PLANT)
     
-    # Report date range
     print("Enter the report date range (start and end dates):")
     start_date = get_date_input("Start date", last_report_date)
     end_date = get_date_input("End date", start_date.strftime("%Y-%m-%d"))
@@ -95,7 +93,6 @@ def get_user_inputs():
         print("End date must be after start date.")
         return get_user_inputs()
     
-    # New investments
     num_new_investments = get_int_input("Number of new investments (default 0)", "0")
     for _ in range(num_new_investments):
         amount = get_float_input("Investment amount")
@@ -111,7 +108,6 @@ def get_user_inputs():
             "method": method
         })
     
-    # Variable costs by category
     print("Enter variable costs by category (default values from previous report):")
     variable_costs = {}
     for category in ["electricity", "water", "nutrients"]:
@@ -119,7 +115,6 @@ def get_user_inputs():
         cost = get_float_input(f"{category.capitalize()} cost (default ${default:.2f})", str(default))
         variable_costs[category] = cost
     
-    # Number of plants and yield per plant
     num_plants = get_int_input(f"Number of plants (default {last_num_plants})", str(last_num_plants))
     yield_per_plant = get_float_input(f"Yield per plant in pounds (default {last_yield_per_plant})", str(last_yield_per_plant))
     
@@ -151,7 +146,7 @@ def calculate_cost_per_pound(total_annual_costs, num_plants, yield_per_plant):
     return total_annual_costs / total_pounds if total_pounds > 0 else 0
 
 def generate_html_report(investments, report_date, variable_costs, num_plants, yield_per_plant, amortized_fixed, total_annual_costs, cost_per_plant, cost_per_pound):
-    """Generate an HTML report with detailed cost breakdowns."""
+    """Generate an HTML report with detailed cost breakdowns, sales combinations, and projections."""
     html_content = f"""
     <!DOCTYPE html>
     <html>
@@ -165,6 +160,8 @@ def generate_html_report(investments, report_date, variable_costs, num_plants, y
     </head>
     <body>
         <h1>Aquaponics Cost Report - {report_date.strftime('%Y-%m-%d')}</h1>
+        <h2>Hobby Goals and Sales Purpose</h2>
+        <p>The primary goal of this aquaponics hobby is to explore and develop sustainable gardening practices. Sales of produce and plants are conducted solely to cover the costs associated with maintaining and expanding the hobby, and not for the purpose of generating profit. This approach ensures compliance with the Virginia exemption for licensing by selling at or below cost, accounting for the significant investments in infrastructure.</p>
         <h2>Fixed Costs</h2>
         <table>
             <tr><th>Start Date</th><th>Amount</th><th>Amortization Years</th><th>Method</th><th>Annual Depreciation</th><th>Cumulative Depreciation</th></tr>
@@ -175,7 +172,7 @@ def generate_html_report(investments, report_date, variable_costs, num_plants, y
         if inv["method"] == "straight-line":
             annual_depreciation = calculate_straight_line_depreciation(inv["amount"], inv["amortization_years"], start_date, report_date)
             cumulative_depreciation = min((report_date - start_date).days / 365 * (inv["amount"] / inv["amortization_years"]), inv["amount"])
-        else:  # double-declining
+        else:
             annual_depreciation = calculate_double_declining_balance(inv["amount"], inv["amortization_years"], start_date, report_date)
             book_value = inv["amount"]
             current_date = start_date
@@ -217,9 +214,86 @@ def generate_html_report(investments, report_date, variable_costs, num_plants, y
         <p><strong>Number of Plants:</strong> {num_plants}</p>
         <p><strong>Cost per Plant:</strong> ${cost_per_plant:,.2f}</p>
         <p><strong>Cost per Pound:</strong> ${cost_per_pound:,.2f} (assuming {yield_per_plant} lbs/plant)</p>
+    """
+
+    # Sales Combinations Table
+    html_content += f"""
+        <h2>Permissible Sales Combinations</h2>
+        <p>The following table shows combinations of plant and produce sales that equal the total annual costs of ${total_annual_costs:,.2f}, ensuring sales remain at cost per the absorption costing methodology.</p>
+        <table>
+            <tr><th>Plants Sold</th><th>Revenue from Plants</th><th>Pounds Sold</th><th>Revenue from Produce</th><th>Total Revenue</th></tr>
+    """
+    combinations = [
+        (num_plants, 0),  # All plants, no produce
+        (int(num_plants * 0.75), int(num_plants * yield_per_plant * 0.25)),
+        (int(num_plants * 0.5), int(num_plants * yield_per_plant * 0.5)),
+        (int(num_plants * 0.25), int(num_plants * yield_per_plant * 0.75)),
+        (0, int(num_plants * yield_per_plant))  # No plants, all produce
+    ]
+    for plants_sold, pounds_sold in combinations:
+        if plants_sold > 0 and pounds_sold > 0:
+            revenue_plants = (total_annual_costs * plants_sold) / (plants_sold + (pounds_sold / yield_per_plant))
+            revenue_pounds = total_annual_costs - revenue_plants
+        elif plants_sold > 0:
+            revenue_plants = total_annual_costs
+            revenue_pounds = 0
+        else:
+            revenue_plants = 0
+            revenue_pounds = total_annual_costs
+        html_content += f"""
+            <tr>
+                <td>{plants_sold}</td>
+                <td>${revenue_plants:,.2f}</td>
+                <td>{pounds_sold}</td>
+                <td>${revenue_pounds:,.2f}</td>
+                <td>${revenue_plants + revenue_pounds:,.2f}</td>
+            </tr>
+        """
+    html_content += "</table>"
+
+    # 20-Year Projection Table
+    projection_data = []
+    for i in range(1, 21):
+        future_date = report_date + timedelta(days=365.25 * i)
+        amortized_fixed_future = calculate_amortized_fixed_costs(investments, future_date)
+        projected_variable_costs = sum(variable_costs.values()) * (1 + 0.03)**i
+        total_annual_costs_future = amortized_fixed_future + projected_variable_costs
+        cost_per_plant_future = total_annual_costs_future / num_plants if num_plants > 0 else 0
+        total_pounds = num_plants * yield_per_plant
+        cost_per_pound_future = total_annual_costs_future / total_pounds if total_pounds > 0 else 0
+        projection_data.append({
+            "year": future_date.year,
+            "projected_variable_costs": projected_variable_costs,
+            "amortized_fixed_future": amortized_fixed_future,
+            "total_annual_costs_future": total_annual_costs_future,
+            "cost_per_plant_future": cost_per_plant_future,
+            "cost_per_pound_future": cost_per_pound_future
+        })
+
+    projection_rows = ""
+    for data in projection_data:
+        projection_rows += f"""
+        <tr>
+            <td>{data['year']}</td>
+            <td>${data['projected_variable_costs']:,.2f}</td>
+            <td>${data['amortized_fixed_future']:,.2f}</td>
+            <td>${data['total_annual_costs_future']:,.2f}</td>
+            <td>${data['cost_per_plant_future']:,.2f}</td>
+            <td>${data['cost_per_pound_future']:,.2f}</td>
+        </tr>
+        """
+
+    html_content += f"""
+    <h2>20-Year Cost Projection (Assuming 3% Annual Inflation on Variable Costs)</h2>
+    <p>This table projects future costs assuming variable costs increase by 3% annually, with fixed costs based on current investments.</p>
+    <table>
+        <tr><th>Year</th><th>Projected Variable Costs</th><th>Amortized Fixed Costs</th><th>Total Annual Costs</th><th>Cost per Plant</th><th>Cost per Pound</th></tr>
+        {projection_rows}
+    </table>
     </body>
     </html>
     """
+
     with open(f"virginia_hobby_gardening_report_{report_date.strftime('%Y%m%d')}.html", "w") as f:
         f.write(html_content)
 
@@ -233,9 +307,8 @@ def main():
         cost_per_plant = calculate_cost_per_plant(total_annual_costs, num_plants)
         cost_per_pound = calculate_cost_per_pound(total_annual_costs, num_plants, yield_per_plant)
         generate_html_report(investments, current_date, variable_costs, num_plants, yield_per_plant, amortized_fixed, total_annual_costs, cost_per_plant, cost_per_pound)
-        current_date += timedelta(days=365)  # Next year
+        current_date += timedelta(days=365.25)
     
-    # Save data to JSON
     report_data = {
         "investments": investments,
         "last_variable_costs": variable_costs,
