@@ -1,1 +1,30 @@
-{"investments": [{"amount": 18540.0, "start_date": "2024-11-01", "amortization_years": 20, "method": "straight-line"}, {"amount": 12360.0, "start_date": "2024-12-01", "amortization_years": 20, "method": "straight-line"}, {"amount": 1025.0, "start_date": "2025-02-15", "amortization_years": 20, "method": "straight-line"}, {"amount": 0.0, "start_date": "2025-03-18", "amortization_years": 1, "method": "straight-line"}], "last_variable_costs": {"electricity": 0.0, "water": 0.0, "nutrients": 0.0}, "last_num_plants": 220, "last_yield_per_plant": 0.5, "last_report_date": "2025-03-18"}
+{
+    "investments": [
+        {
+            "amount": 18540,
+            "start_date": "2024-11-01",
+            "amortization_years": 20,
+            "method": "straight-line"
+        },
+        {
+            "amount": 12360,
+            "start_date": "2024-12-01",
+            "amortization_years": 20,
+            "method": "straight-line"
+        },
+        {
+            "amount": 1025,
+            "start_date": "2025-02-15",
+            "amortization_years": 20,
+            "method": "straight-line"
+        }
+    ],
+    "last_variable_costs": {
+        "electricity": 0,
+        "water": 0,
+        "nutrients": 0
+    },
+    "last_num_plants": 220,
+    "last_yield_per_plant": 0.5,
+    "last_report_date": "2025-03-18"
+}
