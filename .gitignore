@@ -2,5 +2,8 @@
 *.devdbrc*
 *.vscode*
 
+#Python virtual environment
+.venv*
+
 # Config files, holds keys and other content not placed on github
 *Config.ini*

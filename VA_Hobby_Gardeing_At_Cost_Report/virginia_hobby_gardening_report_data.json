@@ -1,4 +1,20 @@
 {
+    "historical_variable_costs": [
+        {
+            "year": 2025,
+            "costs": {
+                "Electricity": 120.0,
+                "Water": 0.0,
+                "Natural Gas": 60.0,
+                "Compute": 120.0,
+                "Automation components": 350.0,
+                "Nutrient": 80.0,
+                "Testing": 120.0,
+                "Fingerlings": 250.0,
+                "Fish Feed": 300.0
+            }
+        }
+    ],
     "investments": [
         {
             "amount": 18540,
@@ -19,12 +35,7 @@
             "method": "straight-line"
         }
     ],
-    "last_variable_costs": {
-        "electricity": 50,
-        "water": 0,
-        "nutrients": 20
-    },
-    "last_num_plants": 220,
+    "last_num_plants": 400,
     "last_yield_per_plant": 0.5,
-    "last_report_date": "2025-03-17"
+    "last_report_date": "2025-03-18"
 }
